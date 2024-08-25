@@ -1,0 +1,144 @@
+{{define "header"}}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{.Title}}</title>
+        <link rel="stylesheet" href="/public/css/pure.css" />
+        <link rel="stylesheet" href="/public/css/common.css" />
+        <script src="/public/js/pages/{{block "script" .}}{{end}}" type="module"></script>
+    </head>
+    <body>
+<div id="modal-backdrop" class="modal-backdrop hidden"></div>
+<div id="modal-wrapper" class="modal-wrapper hidden"></div>
+<div id="error-div" class="request-error-div hidden"></div>
+{{end}}
+
+{{define "button"}}
+{{$id := index . 0}}
+{{$text := index . 1}}
+{{$disabled := index . 2}}
+{{$style := index . 3}}
+{{$cls := index . 4}}
+<button
+    {{if $id}}
+    id="{{$id}}"
+    {{end}}
+    type="button"
+    class="pure-button {{$cls}}{{if $disabled}} pure-button-disabled" disabled{{else}}"{{end}}
+    {{if $style}}
+    style="{{$style}}"
+    {{end}}
+    >
+    {{$text}}
+</button>
+{{end}}
+
+{{define "result"}}
+{{$name := index . 0}}
+{{$opt1 := index . 1}}
+{{$opt2 := index . 2}}
+{{$color := index . 3}}
+{{$total := index . 4}}
+{{$obj := index . 5}}
+    <p id="{{$name}}-result-{{$opt1}}-p"> {{$name}} {{$opt1}}
+    <b
+        id="{{$name}}-result-{{$opt1}}-val"
+        class="underline"
+        {{if gt $total 0}}
+            style="color:{{$color}}">
+            {{$total}}
+        {{else}}
+            >
+            nothing
+        {{end}}
+    </b>
+    </p>
+    {{$length := len $obj}}
+    {{if gt $length 0}}
+    <ul id="{{$name}}-result-{{$opt1}}-ul">
+        {{range $k, $v := $obj}}
+        <li id="{{$name}}-result-{{$k}}-li">
+            <i><span id="{{$name}}-result-{{$k}}-val">{{$v}}</span> {{$opt2}} {{$k}}</i>
+        </li>
+        {{end}}
+    </ul>
+    {{end}}
+{{end}}
+
+{{define "table"}}
+{{$cols := index . 0}}
+{{$rows := index . 1}}
+{{$limit := index . 2}}
+{{$offset := index . 3}}
+{{$currentPage := index . 4}}
+{{$maxPage := index . 5}}
+{{$sizeConfig := index . 6}}
+{{$count := index . 7}}
+{{$withResult := index . 8}}
+{{$withHighlight := index . 9}}
+<div>
+    {{if eq $count 0}}
+    <h1 class="underline">No Sessions</h1>
+    {{else}}
+    <h1 class="underline">Sessions</h1>
+    {{end}}
+    <div class="flex-row space-between mbot-1 align-center w-100">
+        <div class="flex-col pure-form">
+        <label for="size-select">Page Size</label>
+        <select id="size-select" class="pure-input">
+            {{range $size := $sizeConfig}}
+                <option
+                    value="{{$size}}"
+                    {{if eq $size $limit}}selected{{end}}
+                    >{{$size}}
+                </option>
+            {{end}}
+        </select>
+        </div>
+        <p>Page
+            <span id="current-page">{{$currentPage}}</span> /
+            <span id="max-page">{{$maxPage}}</span>
+        </p>
+    </div>
+    <table
+        id="session-table"
+        class="pure-table pure-table-bordered"
+    >
+    <thead>
+    <tr>
+    {{range $col := $cols}}
+        <th class="cap">{{$col}}</th>
+    {{end}}
+    </tr>
+    </thead>
+    <tbody>
+    {{range $i, $row := $rows}}
+    <tr
+        {{if $withResult}}data-result={{index $row "result"}} {{end}}
+        class="clickable-row{{if $withHighlight}}{{if eq $i 0}} selected-row{{end}}{{end}}">
+        {{range $col := $cols}}
+        <td data-name="{{$col}}">{{index $row $col}}</td>
+        {{end}}
+        </tr>
+    {{end}}
+    </tbody>
+    </table>
+    <div class="flex-row space-between mtop-1 w-100">
+        {{template "button" (args "previous-btn" "Previous" (eq $currentPage 1) nil "")}}
+        {{template "button" (args "next-btn" "Next" (eq $currentPage $maxPage) "width:100px" "")}}
+    </div>
+</div>
+{{end}}
+
+
+{{define "footer"}}
+    <div id="spinner" class="spinner hidden">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</body>
+</html>
+{{end}}

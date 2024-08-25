@@ -1,0 +1,50 @@
+{{define "script"}}auth.js{{end}}
+{{template "header" .}}
+
+<div id="container" class="flex-col align-center">
+    {{if eq .Name "login"}}
+    <a class="clear-link" href="/signup">
+        <button id="link-btn" type="button" class="pure-button secondary mtop-1">
+            GO TO SIGNUP
+        </button>
+    </a>
+    {{else}}
+    <a class="clear-link" href="/login">
+        <button id="link-btn" type="button" class="pure-button secondary mtop-1">
+            GO TO LOGIN
+        </button>
+    </a>
+    {{end}}
+    <h1 class="cap">{{.Name}}</h1>
+    <div class="pure-form flex-col align-center gap-1">
+        <div class="flex-col">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" />
+        </div>
+        <div class="flex-col">
+            <label for="password">Password</label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+            />
+        </div>
+        {{if eq .Name "signup"}}
+        <div class="flex-col">
+            <label for="invite-code">Invite Code</label>
+            <input id="invite-code" name="inviteCode" type="text" />
+        </div>
+        {{end}}
+        <button
+            id="submit"
+            type="button"
+            disabled
+            class="pure-button primary upper w-100 mtop-1"
+        >
+        {{.Name}}
+        </button>
+    </div>
+</div>
+
+{{template "footer" .}}
+

@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+source ./.test.env
+
+if [[ $PORT == "" ]] then
+    PORT=5000
+fi
+
+
+POSTMAN="postman/wager-test-suite.postman_collection.json"
+URL="http://localhost:$PORT/ping"
+TIMEOUT=30
+
+
+ping_until_success() {
+    echo pinging $URL
+    local start_time=$(date +%s)
+    while true; do
+        if curl -s --head --request GET $URL | grep "200 OK" > /dev/null; then
+            return 0
+        fi
+        local current_time=$(date +%s)
+        if [ $((current_time - start_time)) -ge $TIMEOUT ]; then
+            echo "Timeout reached without receiving 200 OK"
+            return 1
+        fi
+        sleep 2
+    done
+}
+
+go build -o ./bin/wager ./cmd/wager
+./bin/wager test &
+WAGER_PID=$!
+
+ping_until_success
+RESULT=$?
+
+if [[ $RESULT == 1 ]] then
+    echo "Failed to connect to $URL"
+    kill $WAGER_PID
+    exit 1
+fi
+
+npx -y newman run $POSTMAN
+EXIT_CODE=$?
+
+kill $WAGER_PID
+exit $EXIT_CODE
+

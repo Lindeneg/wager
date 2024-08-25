@@ -1,0 +1,33 @@
+{{define "script"}}home.js{{end}}
+{{template "header" .}}
+
+<div class="p1">
+    <button id="begin-session" type="button" class="pure-button primary">
+        BEGIN SESSION
+    </button>
+    <button id="add-game" type="button" class="pure-button success">
+        ADD NEW GAME
+    </button>
+</div>
+<div class="flex-col align-center mbot-5">
+    <div class="mbot-1">
+        <h1 class="underline">Current Results</h1>
+        <div id="result-container" class="flex-row wrap gap-3">
+            {{range $value := .Results}}
+            <div id="result-box-{{$value.Name}}-{{$value.ID}}" class="box usr-result-box">
+                {{template "result" (
+                    args $value.Name "wins" "from" "#067106" $value.TotalOwed $value.Owed) }}
+                {{template "result" (
+                    args $value.Name "owes" "to" "#c11b1b" $value.TotalOwe $value.Owe) }}
+            </div>
+            {{end}}
+        </div>
+    </div>
+    <div class="w-100">
+        <hr />
+    </div>
+    {{template "table" (
+        args .Cols .Rows .Limit .Offset .CurrentPage .MaxPage .SizeConfig .Count 0 false) }}
+</div>
+
+{{template "footer" .}}

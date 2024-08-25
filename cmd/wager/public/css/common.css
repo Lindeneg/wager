@@ -1,0 +1,268 @@
+body {
+    background-color: rgb(17, 24, 39);
+    color: #eee;
+    font-family: monospace;
+    font-size: 1rem;
+}
+
+input,
+select {
+    background-color: rgb(22, 37, 68) !important;
+    color: #eee !important;
+}
+
+input:disabled,
+select:disabled {
+    background-color: rgb(21, 20, 32) !important;
+    color: #8e8e8e !important;
+}
+
+input.small {
+    width: 100px;
+}
+
+hr {
+    color: #0e081c;
+}
+
+.upper {
+    text-transform: uppercase;
+}
+
+.cap {
+    text-transform: capitalize;
+}
+
+.clear-link {
+    text-decoration: none;
+    color: #eee;
+}
+
+.selected-row {
+    background-color: #180653;
+}
+
+.clickable-row:hover {
+    background-color: #0a0322;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.box {
+    border: 1px solid;
+    border-radius: 1rem;
+    padding: 0 1rem;
+}
+
+.request-error-div {
+    text-align: center;
+    margin-top: 1rem;
+    border: 1px solid #4f0202;
+    border-radius: 1rem;
+}
+
+.wrap {
+    flex-wrap: wrap;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.gap-1 {
+    gap: 1rem;
+}
+
+.gap-3 {
+    gap: 3rem;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.mtop-1 {
+    margin-top: 1rem;
+}
+
+.mtop-2 {
+    margin-top: 2rem;
+}
+
+.mtop-4 {
+    margin-top: 4rem;
+}
+
+.mbot-1 {
+    margin-bottom: 1rem;
+}
+
+.mbot-5 {
+    margin-bottom: 5rem;
+}
+
+.p1 {
+    padding: 1rem;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.space-evenly {
+    justify-content: space-evenly;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.pure-button:hover {
+    scale: 1.03;
+}
+
+.pure-button.success {
+    background: rgb(7, 96, 28);
+    color: #eee;
+}
+
+.pure-button.warning {
+    background: rgb(138, 69, 5);
+    color: #eee;
+}
+
+.pure-button.primary {
+    background: rgb(88, 8, 149);
+    color: #eee;
+}
+
+.pure-button.secondary {
+    background: rgb(5, 105, 136);
+    color: #eee;
+}
+
+.spinner {
+    color: #ff0303;
+}
+
+.modal-backdrop {
+    position: fixed;
+    width: 100%;
+    min-height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+}
+
+.modal-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+.modal {
+    position: relative;
+    left: -50%;
+    min-width: 30rem;
+    background-color: #eee;
+    z-index: 101;
+    border-radius: 15px;
+    padding: 1rem;
+    background-color: rgb(17 24 39);
+    color: #eee;
+}
+
+.modal-actions {
+    padding: 1rem;
+    text-align: center;
+}
+
+.modal-actions button {
+    margin-right: 1rem;
+    margin-left: 1rem;
+}
+
+.prop-modal-contents {
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    overflow-y: scroll;
+    max-height: 600px;
+}
+
+.prop-modal-content {
+    width: 128px;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.spinner,
+.spinner div {
+    box-sizing: border-box;
+}
+
+.spinner {
+    display: inline-block;
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+    width: 80px;
+    height: 80px;
+}
+
+.spinner div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid currentColor;
+    border-radius: 50%;
+    animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: currentColor transparent transparent transparent;
+}
+
+.spinner div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+
+.spinner div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+
+.spinner div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

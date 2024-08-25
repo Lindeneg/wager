@@ -1,0 +1,108 @@
+{{define "script"}}session.js{{end}}
+{{template "header" .}}
+
+<div class="flex-row space-between gap-1 p1">
+    <div>
+        {{template "button" (args "end-session" "END SESSION"
+            (not .EndSession) nil "primary")}}
+        {{template "button" (args "cancel-session" "CANCEL SESSION"
+            (not .CancelSession) nil "warning")}}
+    </div>
+    <button onclick="window.location.assign('/');" class="pure-button success">GO BACK</button>
+</div>
+<h1 id="session-title" class="underline text-center">
+    {{if .IsSessionOver}}
+    Session Has Ended
+    {{else if .StartGame}}
+    No Active Game
+    {{else if .EndRound}}
+    Round In Progress
+    {{else if .NewRound}}
+    Game In Progress
+    {{end}}
+</h1>
+<div
+    id="session-result"
+    class="flex-row justify-center wrap gap-1 mtop-1 mbot-1{{if .HideActiveResult}} hidden{{end}}">
+    {{range $value := .Results}}
+    <div id="result-box-{{$value.Name}}-{{$value.ID}}" class="box usr-result-box">
+        {{template "result" (
+            args $value.Name "wins" "from" "#067106" $value.TotalOwed $value.Owed) }}
+        {{template "result" (
+            args $value.Name "owes" "to" "#c11b1b" $value.TotalOwe $value.Owe) }}
+    </div>
+    {{end}}
+</div>
+
+<div id="active-game" class="flex-col align-center gap-1{{if .IsSessionOver}} hidden{{end}}">
+    <div id="active-game-actions" class="{{hidden .StartGame "mtop-1"}}">
+        {{template "button" (args "new-round" "NEW ROUND"
+            (not .NewRound) nil "primary")}}
+        {{template "button" (args "end-game" "END GAME"
+            (not .EndGame) nil "secondary")}}
+        {{template "button" (args "cancel-game" "CANCEL GAME"
+            (not .CancelGame) nil "warning")}}
+    </div>
+    <b id="round-count" class="{{if (not .ActiveGameSession)}}hidden{{end}}" >
+        {{if .ActiveGameSession}}Round: {{.ActiveGameSession.Rounds}}{{end}}</b>
+    <div class="flex-col w-100 align-center gap-1 pure-form">
+        <div class="flex-row gap-1">
+            <div class="flex-col">
+                <label>Select Game</label>
+                <select id="game-select"
+                    {{$activeGame := .ActiveGameSession}}
+                    {{if $activeGame}}disabled{{end}}
+                    class="pure-select">
+                    {{range $value := .Games}}
+                    <option
+                        {{if $activeGame}}
+                        {{if eq $activeGame.GameID $value.ID}}selected{{end}}
+                        {{end}}
+                        value="{{$value.ID}}"
+                        >{{$value.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <div class="flex-col">
+                <label>Wager</label>
+                <input
+                    id="wager-input"
+                    class="pure-input small"
+                    value="{{.Wager}}"
+                    {{if gt .Wager 0}}disabled{{end}}
+                />
+            </div>
+        </div>
+    </div>
+        <div id="start-game-wrapper" {{if not .StartGame}}class="hidden"{{end}}>
+        {{template "button" (args "start-game" "START GAME"
+            (not .StartGame) nil "primary")}}
+        </div>
+        <div id="who-won" {{if not .EndRound}}class="hidden"{{end}}>
+        <h3>Who Won?</h3>
+        <div id="who-won-container" class="flex-row gap-1">
+            {{range $user := .Users}}
+            <div id="{{userID $user}}" class="pure-button who-won-btn">
+                {{$user.Name}}
+            </div>
+            {{end}}
+        </div>
+        <hr class="mtop-1 mbot-1" />
+        {{template "button" (args "end-game-round" "END ROUND" true nil "primary")}}
+    </div>
+</div>
+<hr class="mtop-2" />
+
+<div id="result-wrapper" class="flex-col align-center mbot-5">
+    <div id="selected-wrapper" class="hidden">
+        <h1 id="selected-session-title"></h1>
+        <div id="selected-result" class="flex-row justify-center gap-1">
+    </div>
+</div>
+
+{{template "table" (args .Cols .Rows .Limit .Offset .CurrentPage
+    .MaxPage .SizeConfig .Count 1 .ActiveGameSession) }}
+
+</div>
+
+{{template "footer" .}}

@@ -1,0 +1,7 @@
+.idea
+data
+bin
+tmp
+temp
+.*env
+!.test.env

@@ -1,0 +1,4960 @@
+{
+	"info": {
+		"_postman_id": "4a9577f6-c0a0-4994-a4f9-144a9a3e2f83",
+		"name": "1v1 Test Suite",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14852340"
+	},
+	"item": [
+		{
+			"name": "Unauthenticated",
+			"item": [
+				{
+					"name": "EnsureUnauthenticated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CannotGetUsers\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/signout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"signout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CannotGetUsers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains error messages', function() {\r",
+									"    pm.expect(response.message).eq(\"The provided credentials are either invalid or has insufficient privilege to perform the requested action.\");\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CannotGetUser\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CannotGetUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains error messages', function() {\r",
+									"    pm.expect(response.message).eq(\"The provided credentials are either invalid or has insufficient privilege to perform the requested action.\");\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CannotGetGame\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CannotGetGame",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains error messages', function() {\r",
+									"    pm.expect(response.message).eq(\"The provided credentials are either invalid or has insufficient privilege to perform the requested action.\");\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CannotCreateGame\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/game",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"game"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CannotCreateGame",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains error messages', function() {\r",
+									"    pm.expect(response.message).eq(\"The provided credentials are either invalid or has insufficient privilege to perform the requested action.\");\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"RedirectsToLoginPage\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Fifa\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/game",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"game"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RedirectsToLoginPage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains html content type', function() {\r",
+									"    pm.expect(contentType).match(/^text\\/html/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains login page', function() {\r",
+									"    pm.expect(pm.response.text()).contains('<title>Bankmand Login</title>');\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CannotLoginInvalidUser\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authenticated",
+			"item": [
+				{
+					"name": "Signup/Login",
+					"item": [
+						{
+							"name": "CannotLoginInvalidUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function() {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error messages', function() {\r",
+											"    pm.expect(response.message).eq(\"The requested resource could not be found.\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotSignUpEmptyUser\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"foo\",\r\n    \"password\": \"test-1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotSignUpEmptyUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function() {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error messages', function() {\r",
+											"    pm.expect(response.message).eq(\"The requested action could not be exercised due to malformed syntax.\");\r",
+											"    pm.expect(response.error).eq(\"'username' must be more between 3-12 characters\\n'inviteCode' is required\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotSignUpUninvitedUser\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"fo\",\r\n    \"password\": \"test-1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/signup",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotSignUpUninvitedUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function() {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error messages', function() {\r",
+											"    pm.expect(response.message).eq(\"The requested resource could not be found.\");\r",
+											"    pm.expect(response.error).eq(\"'inviteCode' not found\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanSignUpMiles\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"miles\",\r\n    \"password\": \"test-1234\",\r\n    \"inviteCode\": \"invalid-invite\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/signup",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanSignUpMiles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotSignUpTwice\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"packages": {},
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"miles\",\r\n    \"password\": \"test-1234\",\r\n    \"inviteCode\": \"test-invite\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/signup",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotSignUpTwice",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function() {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error message', function() {\r",
+											"    pm.expect(response.message).eq(\"The request was well-formed but not honored. Perhaps the action trying to be performed has already been done?\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanSignUpBill\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"miles\",\r\n    \"password\": \"test-1234\",\r\n    \"inviteCode\": \"test-invite\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/signup",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanSignUpBill",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanSignUpJohn\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"bill\",\r\n    \"password\": \"test-1234\",\r\n    \"inviteCode\": \"test-invite\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/signup",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanSignUpJohn",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanCreateGameFoo\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"john\",\r\n    \"password\": \"test-1234\",\r\n    \"inviteCode\": \"test-invite\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/signup",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Games",
+					"item": [
+						{
+							"name": "CanCreateGameFoo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains created state', function() {\r",
+											"    pm.expect(response.id).eq(1);\r",
+											"    pm.expect(response.name).eq(\"foo\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotCreateGameTwice\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"foo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotCreateGameTwice",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function() {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error message', function() {\r",
+											"    pm.expect(response.message).eq(\"The request was well-formed but not honored. Perhaps the action trying to be performed has already been done?\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartSession1\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"foo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Session 1",
+					"item": [
+						{
+							"name": "CanStartSession1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(1);\r",
+											"    pm.expect(response.result).eq(null);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"    pm.expect(response.users).deep.eq([1, 2, 3]);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotStartSessionTwice\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"users\": [1, 2, 3]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotStartSessionTwice",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function() {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error message', function() {\r",
+											"    pm.expect(response.message).eq(\"The request was well-formed but not honored. Perhaps the action trying to be performed has already been done?\");\r",
+											"    pm.expect(response.error).eq(\"already has active session\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession1\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"users\": [1, 2, 3]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(1);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(200);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotStartGameSessionTwice\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 1,\r\n    \"gameId\": 1,\r\n    \"wager\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotStartGameSessionTwice",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function() {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error message', function() {\r",
+											"    pm.expect(response.message).eq(\"The request was well-formed but not honored. Perhaps the action trying to be performed has already been done?\");\r",
+											"    pm.expect(response.error).eq(\"session has active game-session\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession1\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 1,\r\n    \"gameId\": 1,\r\n    \"wager\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(1);\r",
+											"    pm.expect(response.sessionId).eq(1);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 100,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 100,\r",
+											"            2: 0\r",
+											"        }\r",
+											"    });    \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartRound2GameSession1\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartRound2GameSession1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(1);\r",
+											"    pm.expect(response.sessionId).eq(1);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(400);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound2GameSession1\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"wager\": 400\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/new-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"new-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound2GameSession1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(1);\r",
+											"    pm.expect(response.sessionId).eq(1);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 100,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 100,\r",
+											"            2: 200\r",
+											"        }\r",
+											"    });  \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotEndRoundTwice\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotEndRoundTwice",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function() {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error message', function() {\r",
+											"    pm.expect(response.message).eq(\"The request was well-formed but not honored. Perhaps the action trying to be performed has already been done?\");\r",
+											"    pm.expect(response.error).eq(\"game-session has no active round\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession1\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"winnerId\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(1);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotEndGameSessionTwice\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotEndGameSessionTwice",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function() {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error message', function() {\r",
+											"    pm.expect(response.message).eq(\"The request was well-formed but not honored. Perhaps the action trying to be performed has already been done?\");\r",
+											"    pm.expect(response.error).eq(\"game-session has ended\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession2\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(2);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(400);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession2\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 1,\r\n    \"gameId\": 1,\r\n    \"wager\": 400\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(2);\r",
+											"    pm.expect(response.sessionId).eq(1);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 200,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 200,\r",
+											"            2: 0\r",
+											"        }\r",
+											"    });   \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartRound2GameSession2\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartRound2GameSession2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(2);\r",
+											"    pm.expect(response.sessionId).eq(1);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(200);   \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound2GameSession2\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"wager\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/new-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"new-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound2GameSession2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(2);\r",
+											"    pm.expect(response.sessionId).eq(1);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 300,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 300,\r",
+											"            2: 0\r",
+											"        }\r",
+											"    });    \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession2\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(2);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession3\");\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(3);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(100);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession3\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 1,\r\n    \"gameId\": 1,\r\n    \"wager\": 100\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(3);\r",
+											"    pm.expect(response.sessionId).eq(1);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 50,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 0,\r",
+											"            2: 50\r",
+											"        }\r",
+											"    });   \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession3\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(3);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession4\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains created state', function() {\r",
+											"    pm.expect(response.id).eq(4);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(400);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession4\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 1,\r\n    \"gameId\": 1,\r\n    \"wager\": 400\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(4);\r",
+											"    pm.expect(response.sessionId).eq(1);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 0,\r",
+											"            3: 200\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 0,\r",
+											"            3: 200\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 0,\r",
+											"            2: 0\r",
+											"        }\r",
+											"    });      \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession4\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 3\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(4);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndSession1\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndSession1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"/* GameSession4\r",
+											"foo -> bar:0, baz:200\r",
+											"bar -> foo:0, baz:200\r",
+											"baz -> foo:0, bar:0\r",
+											"--------------------\r",
+											"GameSession3\r",
+											"foo -> bar:50, baz:0\r",
+											"bar -> foo:0, baz:0\r",
+											"baz -> foo:0, bar:50\r",
+											"--------------------\r",
+											"GameSession2\r",
+											"foo -> bar:0, baz:0\r",
+											"bar -> foo:300, baz:0\r",
+											"baz -> foo:300, bar:0\r",
+											"--------------------\r",
+											"GameSession1\r",
+											"foo -> bar:100, baz:0\r",
+											"bar -> foo:0, baz:0\r",
+											"baz -> foo:100, bar:200\r",
+											"----------------------\r",
+											"Resolved\r",
+											"foo -> bar:150, baz:200\r",
+											"bar -> foo:300, baz:200\r",
+											"baz -> foo:400, bar:250\r",
+											"----------------------\r",
+											"Simplified\r",
+											"foo -> \r",
+											"bar -> foo:150,\r",
+											"baz -> foo:200, bar:50 */\r",
+											"\r",
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Can resolve correct session result', function() {\r",
+											"    pm.expect(response.id).eq(1);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: { 2: 0, 3: 0 },\r",
+											"        2: { 1: 150, 3: 0 },\r",
+											"        3: { 1: 200, 2: 50 }\r",
+											"    });\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartSession2\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Session2",
+					"item": [
+						{
+							"name": "CanStartSession2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(2);\r",
+											"    pm.expect(response.result).eq(null);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"    pm.expect(response.users).deep.eq([1, 2, 3]);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession5\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"users\": [1, 2, 3]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(5);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(200);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession5\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 2,\r\n    \"gameId\": 1,\r\n    \"wager\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(5);\r",
+											"    pm.expect(response.sessionId).eq(2);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 100,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 100,\r",
+											"            2: 0\r",
+											"        }\r",
+											"    });   \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartRound2GameSession5\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartRound2GameSession5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(5);\r",
+											"    pm.expect(response.sessionId).eq(2);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(400);   \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound2GameSession5\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"wager\": 400\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/new-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"new-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound2GameSession5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(5);\r",
+											"    pm.expect(response.sessionId).eq(2);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 100,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 100,\r",
+											"            2: 200\r",
+											"        }\r",
+											"    });     \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession5\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(5);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession6\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(6);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(400);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession6\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 2,\r\n    \"gameId\": 1,\r\n    \"wager\": 400\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(6);\r",
+											"    pm.expect(response.sessionId).eq(2);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 200,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 200,\r",
+											"            2: 0\r",
+											"        }\r",
+											"    });  \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartRound2GameSession6\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartRound2GameSession6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(6);\r",
+											"    pm.expect(response.sessionId).eq(2);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(200);   \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound2GameSession6\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"wager\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/new-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"new-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound2GameSession6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(6);\r",
+											"    pm.expect(response.sessionId).eq(2);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 300,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 300,\r",
+											"            2: 0\r",
+											"        }\r",
+											"    });   \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession6\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(6);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession7\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(7);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(400);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession7\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 2,\r\n    \"gameId\": 1,\r\n    \"wager\": 400\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(7);\r",
+											"    pm.expect(response.sessionId).eq(2);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 200,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 0,\r",
+											"            3: 0\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 0,\r",
+											"            2: 200\r",
+											"        }\r",
+											"    });    \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession7\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(7);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession8\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession8",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(8);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(800);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession8\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 2,\r\n    \"gameId\": 1,\r\n    \"wager\": 800\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession8",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(8);\r",
+											"    pm.expect(response.sessionId).eq(2);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 0,\r",
+											"            3: 400\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 0,\r",
+											"            3: 400\r",
+											"        },\r",
+											"        3: {\r",
+											"            1: 0,\r",
+											"            2: 0\r",
+											"        }\r",
+											"    });       \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession8\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 8,\r\n    \"winnerId\": 3\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession8",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(8);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndSession2\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndSession2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"/* GameSession 8\r",
+											"foo -> bar:0, baz:400\r",
+											"bar -> foo:0, baz:400\r",
+											"baz -> foo:0, bar:0\r",
+											"----------------------\r",
+											"GameSession 7\r",
+											"foo -> bar:200, baz:0\r",
+											"bar -> foo:0, baz:0\r",
+											"baz -> foo:0, bar:200\r",
+											"----------------------\r",
+											"GameSession 6\r",
+											"foo -> bar:0, baz:0\r",
+											"bar -> foo:300, baz:0\r",
+											"baz -> foo:300, bar:0\r",
+											"----------------------\r",
+											"GameSession 5\r",
+											"foo -> bar:100, baz:0\r",
+											"bar -> foo:0, baz:0\r",
+											"baz -> foo:100, bar:200\r",
+											"----------------------\r",
+											"Resolved\r",
+											"foo -> bar:300, baz:400\r",
+											"bar -> foo:300, baz:400\r",
+											"baz -> foo:400, bar:400\r",
+											"----------------------\r",
+											"Simplified\r",
+											"foo -> bar:0, baz:0\r",
+											"bar -> foo:0, baz:0\r",
+											"baz -> foo:0, bar:0 */\r",
+											"\r",
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Can resolve correct session result', function() {\r",
+											"    pm.expect(response.id).eq(2);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: { 2: 0, 3: 0 },\r",
+											"        2: { 1: 0, 3: 0 },\r",
+											"        3: { 1: 0, 2: 0 }\r",
+											"    });\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartSession3\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Session3",
+					"item": [
+						{
+							"name": "CanStartSession3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(3);\r",
+											"    pm.expect(response.result).eq(null);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"    pm.expect(response.users).deep.eq([1, 2]);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession9\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"users\": [1, 2]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession9",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(9);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(200);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession9\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 3,\r\n    \"gameId\": 1,\r\n    \"wager\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession9",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(9);\r",
+											"    pm.expect(response.sessionId).eq(3);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 200\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 0\r",
+											"        }\r",
+											"    });\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartRound2GameSession9\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "9"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartRound2GameSession9",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(9);\r",
+											"    pm.expect(response.sessionId).eq(3);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(200);   \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound2GameSession9\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"wager\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/new-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"new-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "9"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound2GameSession9",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(9);\r",
+											"    pm.expect(response.sessionId).eq(3);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 400\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 0\r",
+											"        }\r",
+											"    });  \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession9\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "9"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession9",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(9);\r",
+											"    pm.expect(response.rounds).eq(2);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession10\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "9"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession10",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(10);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(600);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndRound1GameSession10\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 3,\r\n    \"gameId\": 1,\r\n    \"wager\": 600\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndRound1GameSession10",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(10);\r",
+											"    pm.expect(response.sessionId).eq(3);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: {\r",
+											"            2: 0\r",
+											"        },\r",
+											"        2: {\r",
+											"            1: 600\r",
+											"        }\r",
+											"    });  \r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndGameSession10\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"winnerId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session/:id/end-round",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end-round"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndGameSession10",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains end state', function() {\r",
+											"    pm.expect(response.id).eq(10);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(0);\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanEndSession3\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanEndSession3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"/* GameSession 9\r",
+											"foo -> bar:400\r",
+											"bar -> foo:0\r",
+											"----------------------\r",
+											"GameSession 10\r",
+											"foo -> bar:0\r",
+											"bar -> foo:600\r",
+											"----------------------\r",
+											"Resolved\r",
+											"foo -> bar:400\r",
+											"bar -> foo:600\r",
+											"----------------------\r",
+											"Simplified\r",
+											"foo -> bar:0\r",
+											"bar -> foo:200 */\r",
+											"\r",
+											"pm.test(\"Status code is 200\", function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Can resolve correct session result', function() {\r",
+											"    pm.expect(response.id).eq(3);\r",
+											"    pm.expect(response.result).deep.eq({\r",
+											"        1: { 2: 0 },\r",
+											"        2: { 1: 200 }\r",
+											"    });\r",
+											"    pm.expect(response.ended).not.eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartSession4\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/session/:id/end",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session",
+										":id",
+										"end"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Session4",
+					"item": [
+						{
+							"name": "CanStartSession4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(4);\r",
+											"    pm.expect(response.result).eq(null);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"    pm.expect(response.users).deep.eq([1, 3]);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanCancelUnstartedSession\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"users\": [1, 3]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanCancelUnstartedSession",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function() {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotCancelEndedSession\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/session/:id",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotCancelEndedSession",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function() {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error msg', function() {\r",
+											"    pm.expect(response.message).eq(\"The request was well-formed but not honored. Perhaps the action trying to be performed has already been done?\");\r",
+											"    pm.expect(response.error).eq(\"session has ended\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartSession5\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/session/:id",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartSession5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(5);\r",
+											"    pm.expect(response.result).eq(null);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"    pm.expect(response.users).deep.eq([1, 3]);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotStartNewSessionIfAnotherSessionisActive\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"users\": [1, 3]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotStartNewSessionIfAnotherSessionisActive",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function() {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains errors', function() {\r",
+											"    pm.expect(response.message).eq(\"The request was well-formed but not honored. Perhaps the action trying to be performed has already been done?\");\r",
+											"    pm.expect(response.error).eq(\"already has active session\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession11\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"users\": [1, 3]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession11",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(11);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(200);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanCancelUnstartedGameSession\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 5,\r\n    \"gameId\": 1,\r\n    \"wager\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanCancelUnstartedGameSession",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function() {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CannotCancelEndedGameSession\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "11"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CannotCancelEndedGameSession",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function() {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains error msg', function() {\r",
+											"    pm.expect(response.message).eq(\"The request was well-formed but not honored. Perhaps the action trying to be performed has already been done?\");\r",
+											"    pm.expect(response.error).eq(\"game-session has active round\");\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanStartGameSession12\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/game-session/:id",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CanStartGameSession12",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function() {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"const contentType = pm.response.headers.get('Content-Type');\r",
+											"\r",
+											"pm.test('Response contains json content type', function() {\r",
+											"    pm.expect(contentType).match(/^application\\/json/);\r",
+											"});\r",
+											"\r",
+											"pm.test('Response contains start state', function() {\r",
+											"    pm.expect(response.id).eq(12);\r",
+											"    pm.expect(response.rounds).eq(1);\r",
+											"    pm.expect(response.wager).eq(200);\r",
+											"    pm.expect(response.ended).eq(null);\r",
+											"});\r",
+											"\r",
+											"pm.execution.setNextRequest(\"CanCalculateResult1\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sessionId\": 5,\r\n    \"gameId\": 1,\r\n    \"wager\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/game-session",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"game-session"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CanCalculateResult1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/* SESSION 1\r",
+									"foo -> \r",
+									"bar -> foo:150,\r",
+									"baz -> foo:200, bar:50\r",
+									"____________________________\r",
+									"SESSION 2\r",
+									"foo -> bar:0, baz:0\r",
+									"bar -> foo:0, baz:0\r",
+									"baz -> foo:0, bar:0\r",
+									"____________________________\r",
+									"SESSION 3\r",
+									"foo -> bar:0\r",
+									"bar -> foo:200\r",
+									"____________________________\r",
+									"SUM\r",
+									"foo -> bar:0, baz:0\r",
+									"bar -> foo:350, baz:0\r",
+									"baz -> foo:200, bar:50\r",
+									"----------------------------\r",
+									"RESOLVED\r",
+									"foo -> bar:0, baz:0\r",
+									"bar -> foo:350, baz:0\r",
+									"baz -> foo:200, bar:0 */\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains start state', function() {\r",
+									"    pm.expect(response).deep.eq({\r",
+									"        1: { 2: 0, 3: 0 },\r",
+									"        2: { 1: 350, 3: 0 },\r",
+									"        3: { 1: 200, 2: 50 }\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CanEndRound1GameSession12\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/result",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"result"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CanEndRound1GameSession12",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains start state', function() {\r",
+									"    pm.expect(response.id).eq(12);\r",
+									"    pm.expect(response.rounds).eq(1);\r",
+									"    pm.expect(response.wager).eq(0);\r",
+									"    pm.expect(response.result).deep.eq({\r",
+									"        1: {\r",
+									"            3: 200\r",
+									"        },\r",
+									"        3: {\r",
+									"            1: 0\r",
+									"        }\r",
+									"    });\r",
+									"    pm.expect(response.ended).eq(null);\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CanStartRound2GameSession12\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"winnerId\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/game-session/:id/end-round",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"game-session",
+								":id",
+								"end-round"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CanStartRound2GameSession12",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains start state', function() {\r",
+									"    pm.expect(response.id).eq(12);\r",
+									"    pm.expect(response.sessionId).eq(5);\r",
+									"    pm.expect(response.rounds).eq(2);\r",
+									"    pm.expect(response.wager).eq(100);   \r",
+									"    pm.expect(response.ended).eq(null);\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CanEndRound2GameSession12\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"wager\": 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/game-session/:id/new-round",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"game-session",
+								":id",
+								"new-round"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CanEndRound2GameSession12",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains start state', function() {\r",
+									"    pm.expect(response.id).eq(12);\r",
+									"    pm.expect(response.rounds).eq(2);\r",
+									"    pm.expect(response.wager).eq(0);\r",
+									"    pm.expect(response.result).deep.eq({\r",
+									"        1: {\r",
+									"            3: 100\r",
+									"        },\r",
+									"        3: {\r",
+									"            1: 0\r",
+									"        }\r",
+									"    });\r",
+									"    pm.expect(response.ended).eq(null);\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CanEndGameSession12\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"winnerId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/game-session/:id/end-round",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"game-session",
+								":id",
+								"end-round"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CanEndGameSession12",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains end state', function() {\r",
+									"    pm.expect(response.id).eq(12);\r",
+									"    pm.expect(response.rounds).eq(2);\r",
+									"    pm.expect(response.wager).eq(0);\r",
+									"    pm.expect(response.ended).not.eq(null);\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CanEndSession5\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/game-session/:id/end",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"game-session",
+								":id",
+								"end"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CanEndSession5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Can resolve correct session result', function() {\r",
+									"    pm.expect(response.id).eq(5);\r",
+									"    pm.expect(response.result).deep.eq({\r",
+									"        1: { 3: 100 },\r",
+									"        3: { 1: 0 }\r",
+									"    });\r",
+									"    pm.expect(response.ended).not.eq(null);\r",
+									"});\r",
+									"\r",
+									"pm.execution.setNextRequest(\"CanCalculateResult2\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/session/:id/end",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"session",
+								":id",
+								"end"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CanCalculateResult2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const contentType = pm.response.headers.get('Content-Type');\r",
+									"\r",
+									"pm.test('Response contains json content type', function() {\r",
+									"    pm.expect(contentType).match(/^application\\/json/);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response contains start state', function() {\r",
+									"    pm.expect(response).deep.eq({\r",
+									"        1: { 2: 0, 3: 0 },\r",
+									"        2: { 1: 350, 3: 0 },\r",
+									"        3: { 1: 100, 2: 50 }\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/result",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"result"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"pm.test(\"Response time is less than 250ms\", function() {\r",
+					"    pm.expect(pm.response.responseTime).to.be.below(Number(pm.collectionVariables.get('maxAcceptableResponseTimeInMs')));\r",
+					"});\r",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "maxAcceptableResponseTimeInMs",
+			"value": "250",
+			"type": "string"
+		},
+		{
+			"key": "url",
+			"value": "http://localhost:5000/api",
+			"type": "string"
+		},
+		{
+			"key": "inviteCode",
+			"value": "test-invite",
+			"type": "string"
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "session1",
+			"value": "[{users: [1, 2, 3]}]",
+			"type": "string"
+		}
+	]
+}
