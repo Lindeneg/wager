@@ -1,18 +1,19 @@
-import c from "../shared/c.js";
-import http from "../shared/http.js";
-import table from "../shared/table.js";
-import {
+import { tableProps } from "./shared.js";
+
+const c = window.clEl;
+const http = window.clHttp;
+const {
     disableBtn,
     disableEl,
     enableBtn,
     enableEl,
     enableElIf,
-    hasResolvedResult,
     hideEl,
     showEl,
+    getNameFromId,
     strToIntId,
     tempDisable,
-} from "../shared/common.js";
+} = window.clCommon;
 
 const STATE = {
     SESSION_ENDED: "Session Has Ended",
@@ -58,8 +59,17 @@ const activeGameEl = document.getElementById("active-game");
 const activeGameActions = document.getElementById("active-game-actions");
 const roundCountEl = document.getElementById("round-count");
 
-const ctx = table.initialize({
-    id: "session-table",
+const ctx = window.clTable.initialize({
+    ...tableProps,
+    onRender: (entry, row) => {
+        if (entry.result) {
+            row.el.dataset.result = JSON.stringify(entry.result);
+        }
+    },
+    onInitialize: (row) => {
+        const data = row.data(null, "result");
+        return data ? { result: JSON.parse(data) } : {};
+    },
     onClick: (row) => {
         ctx.table.highlight(row);
         renderSelectedResult();
@@ -76,6 +86,108 @@ const ctx = table.initialize({
         }));
     },
 });
+
+/**
+ * @param {number | string} userId
+ * @param {Record<string, any>} resultData
+ * @param {Record<string, any>[]} users
+ * @returns {HTMLDivElement} */
+const resultBox = (userId, resultData) => {
+    const owesObj = resultData[userId];
+    const totalOwe = Object.values(owesObj).reduce((acc, cur) => acc + cur, 0);
+    const totalOwed = Object.entries(resultData).reduce((acc, [key, value]) => {
+        if (key === userId || !value[userId]) return acc;
+        return acc + value[userId];
+    }, 0);
+
+    const wrapper = c.append(
+        c.div({}, "box"),
+        c.append(
+            c.any("p", {
+                innerText: getNameFromId(Number(userId), users) + " wins ",
+            }),
+            c.any(
+                "b",
+                {
+                    innerText: totalOwed ? totalOwed : "nothing",
+                    style: totalOwed ? "color:#067106" : "",
+                },
+                ["underline"]
+            )
+        )
+    );
+
+    if (totalOwed) {
+        c.append(
+            wrapper,
+            c.append(
+                c.any("ul"),
+                ...Object.entries(resultData).map(([key, value]) => {
+                    if (key === userId || value[userId] === 0) return null;
+                    const owed = value[userId];
+                    return c.append(
+                        c.any("li"),
+                        c.any("i", {
+                            innerText: `${owed} from ${getNameFromId(
+                                Number(key),
+                                users
+                            )}`,
+                        })
+                    );
+                })
+            )
+        );
+    }
+
+    c.append(
+        wrapper,
+        c.append(
+            c.any("p", {
+                innerText: getNameFromId(Number(userId), users) + " owes ",
+            }),
+            c.any(
+                "b",
+                {
+                    innerText: totalOwe ? totalOwe : "nothing",
+                    style: totalOwe ? "color:rgb(193, 27, 27)" : "",
+                },
+                ["underline"]
+            )
+        )
+    );
+
+    if (!totalOwe) return wrapper;
+
+    return c.append(
+        wrapper,
+        c.append(
+            c.any("ul"),
+            ...Object.entries(owesObj).map(([key, value]) => {
+                if (value === 0) return null;
+                return c.append(
+                    c.any("li"),
+                    c.any("i", {
+                        innerText: `${value} to ${getNameFromId(
+                            Number(key),
+                            users
+                        )}`,
+                    })
+                );
+            })
+        )
+    );
+};
+
+/**
+ * @param {Object} result
+ * @returns {bool} */
+export const hasResolvedResult = (result) => {
+    return (
+        Object.values(result).reduce((acc, cur) => {
+            return acc + Object.values(cur).reduce((a, c) => a + c, 0);
+        }, 0) > 0
+    );
+};
 
 const winnerId = () => {
     const btn = whoWonBtns.find((e) => e.classList.contains("success"));
@@ -166,7 +278,7 @@ const renderSelectedResult = () => {
     selectedResult.innerHTML = "";
     const result = selected.state().result;
     Object.keys(result).forEach((key) => {
-        selectedResult.appendChild(c.resultBox(key, result, users));
+        selectedResult.appendChild(resultBox(key, result));
     });
 };
 
@@ -179,7 +291,7 @@ const renderSessionResult = (result) => {
     }
     sessionResult.innerHTML = "";
     Object.keys(result).forEach((key) => {
-        sessionResult.appendChild(c.resultBox(key, result, users));
+        sessionResult.appendChild(resultBox(key, result));
     });
 };
 
@@ -213,7 +325,7 @@ startGameBtn.addEventListener("click", async () => {
     if (err) return;
     data.game = gameName[data.gameId];
     const pageData = ctx.state.data[1];
-    const limit = Number(ctx.state.search.get("limit") ?? 10);
+    const limit = ctx.getLimit();
     if (pageData.length >= limit) {
         pageData.pop();
     }

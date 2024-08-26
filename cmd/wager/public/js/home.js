@@ -1,13 +1,8 @@
-import c from "../shared/c.js";
-import http from "../shared/http.js";
-import modal from "../shared/modal.js";
-import table from "../shared/table.js";
-import {
-    tempDisable,
-    enableElIf,
-    getNameFromID,
-    strToUser,
-} from "../shared/common.js";
+import { tableProps } from "./shared.js";
+
+const c = window.clEl;
+const http = window.clHttp;
+const { tempDisable, enableElIf, getNameFromId, strToUser } = window.clCommon;
 
 const users = Array.from(document.querySelectorAll(".usr-result-box")).map(
     (e) => strToUser(e.id)
@@ -16,10 +11,10 @@ const users = Array.from(document.querySelectorAll(".usr-result-box")).map(
 const beginBtn = document.getElementById("begin-session");
 const newGameBtn = document.getElementById("add-game");
 
-modal.initialize();
+const modal = window.clModal.initialize({ withKeyListener: true });
 
-const ctx = table.initialize({
-    id: "session-table",
+const ctx = window.clTable.initialize({
+    ...tableProps,
     onClick: (row) => {
         window.location.assign("/session/" + row.val("id"));
     },
@@ -32,7 +27,7 @@ const ctx = table.initialize({
                 ...e,
                 sessions: e.gameSessions.length,
                 users: e.users.reduce((acc, id, idx) => {
-                    acc += getNameFromID(id, users);
+                    acc += getNameFromId(id, users);
                     if (idx < e.users.length - 1) {
                         acc += ", ";
                     }

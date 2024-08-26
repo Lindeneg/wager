@@ -1,5 +1,5 @@
-import http from "../shared/http.js";
-import { enableBtn, disableBtn } from "../shared/common.js";
+const http = window.clHttp;
+const { enableBtn, disableBtn } = window.clCommon;
 
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
