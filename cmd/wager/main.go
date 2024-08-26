@@ -15,9 +15,6 @@ import (
 //go:embed public/*
 var publicFS embed.FS
 
-// TODO use file logger in chi middleware (possibly look into slog)
-// TODO setup docker and nginx
-
 func main() {
 	e := env.New()
 	s, err := db.New("sqlite3", e.ConnectionString)
