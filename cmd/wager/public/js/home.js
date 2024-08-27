@@ -15,6 +15,11 @@ const modal = window.clModal.initialize({ withKeyListener: true });
 
 const ctx = window.clTable.initialize({
     ...tableProps,
+    afterRender: ({ table }) => {
+        const active = table.active();
+        if (!active) return;
+        table.highlight(active);
+    },
     onClick: (row) => {
         window.location.assign("/session/" + row.val("id"));
     },

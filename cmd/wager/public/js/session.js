@@ -61,12 +61,12 @@ const roundCountEl = document.getElementById("round-count");
 
 const ctx = window.clTable.initialize({
     ...tableProps,
-    onRender: (entry, row) => {
+    onRender: (_, entry, row) => {
         if (entry.result) {
             row.el.dataset.result = JSON.stringify(entry.result);
         }
     },
-    onInitialize: (row) => {
+    onInitialize: (_, row) => {
         const data = row.data(null, "result");
         return data ? { result: JSON.parse(data) } : {};
     },
