@@ -10,6 +10,7 @@ const users = Array.from(document.querySelectorAll(".usr-result-box")).map(
 
 const beginBtn = document.getElementById("begin-session");
 const newGameBtn = document.getElementById("add-game");
+const signoutBtn = document.getElementById("sign-out");
 
 const modal = window.clModal.initialize({ withKeyListener: true });
 
@@ -131,3 +132,8 @@ const newSessionHandler = () => {
 
 newGameBtn.addEventListener("click", newGameHandler);
 beginBtn.addEventListener("click", newSessionHandler);
+signoutBtn.addEventListener("click", async () => {
+    const { err } = await http.getJson("/signout");
+    if (err) return;
+    window.location.assign("/login");
+});

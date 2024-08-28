@@ -1,12 +1,17 @@
 {{define "script"}}home.js{{end}}
 {{template "header" .}}
 
-<div class="p1">
-    <button id="begin-session" type="button" class="pure-button primary">
-        BEGIN SESSION
-    </button>
-    <button id="add-game" type="button" class="pure-button success">
-        ADD NEW GAME
+<div class="flex-row space-between p1">
+    <div>
+        <button id="begin-session" type="button" class="pure-button primary">
+            BEGIN SESSION
+        </button>
+        <button id="add-game" type="button" class="pure-button secondary">
+            ADD NEW GAME
+        </button>
+    </div>
+    <button id="sign-out" type="button" class="pure-button">
+        SIGN OUT
     </button>
 </div>
 <div class="flex-col align-center mbot-5">

@@ -6,7 +6,7 @@
         <title>{{.Title}}</title>
         <link rel="stylesheet" href="/public/css/pure.css" />
         <link rel="stylesheet" href="/public/css/common.css" />
-        <script src="https://christian.lindeneg.org/common/index.js"></script>
+        <script src="https://freelance.lindeneg.org/js/shared/common.js"></script>
         <script src="/public/js/{{block "script" .}}{{end}}" type="module"></script>
     </head>
     <body>
@@ -82,7 +82,7 @@
     {{if eq $count 0}}
     <h1 class="underline">No Sessions</h1>
     {{else}}
-    <h1 class="underline">Sessions</h1>
+    <h1 class="underline">{{$count}} Sessions</h1>
     {{end}}
     <div class="flex-row space-between mbot-1 align-center w-100">
         <div class="flex-col pure-form">

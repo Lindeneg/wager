@@ -8,7 +8,7 @@
         {{template "button" (args "cancel-session" "CANCEL SESSION"
             (not .CancelSession) nil "warning")}}
     </div>
-    <button onclick="window.location.assign('/');" class="pure-button success">GO BACK</button>
+    <button onclick="window.location.assign('/');" class="pure-button">GO BACK</button>
 </div>
 <h1 id="session-title" class="underline text-center">
     {{if .IsSessionOver}}
