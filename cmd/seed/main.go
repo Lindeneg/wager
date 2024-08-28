@@ -61,6 +61,10 @@ func main() {
 	s.RunFile("drop")
 	s.RunFile("schema")
 
+	if seedMode == "none" {
+		return
+	}
+
 	for _, u := range users {
 		h, _ := utils.HashPassword("test-password")
 		srv.User.Create(u, h)
