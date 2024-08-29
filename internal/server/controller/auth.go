@@ -108,5 +108,5 @@ func (c Controller) Signup(w http.ResponseWriter, r *http.Request) {
 
 func (c Controller) Signout(w http.ResponseWriter, r *http.Request) {
 	utils.RemoveAuthCookie(w, c.e)
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 }

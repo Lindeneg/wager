@@ -10,26 +10,25 @@ import (
 	"github.com/lindeneg/wager/internal/result"
 )
 
-type GameSessionDB struct {
-	ID        db.ID      `json:"id"`
-	SessionID db.ID      `json:"session_id"`
-	GameID    db.ID      `json:"game_id"`
-	Rounds    int        `json:"rounds"`
-	Result    string     `json:"result"`
-	Wager     int        `json:"wager"`
-	Started   time.Time  `json:"started"`
-	Ended     *time.Time `json:"ended"`
+type GameSessionShared[T string | result.ResultMap] struct {
+	ID      db.ID      `json:"id"`
+	Rounds  int        `json:"rounds"`
+	Wager   int        `json:"wager"`
+	Result  T          `json:"result"`
+	Started time.Time  `json:"started"`
+	Ended   *time.Time `json:"ended"`
 }
 
 type GameSession struct {
-	ID        db.ID            `json:"id"`
-	SessionID db.ID            `json:"sessionId"`
-	GameID    db.ID            `json:"gameId"`
-	Rounds    int              `json:"rounds"`
-	Result    result.ResultMap `json:"result"`
-	Wager     int              `json:"wager"`
-	Started   time.Time        `json:"started"`
-	Ended     *time.Time       `json:"ended"`
+	GameSessionShared[result.ResultMap]
+	SessionID db.ID `json:"sessionId"`
+	GameID    db.ID `json:"gameId"`
+}
+
+type GameSessionDB struct {
+	GameSessionShared[string]
+	SessionID db.ID `json:"session_id"`
+	GameID    db.ID `json:"game_id"`
 }
 
 type GameSessions []GameSession
@@ -50,14 +49,16 @@ func (gs *GameSessions) Scan(src any) error {
 	}
 	for _, gr := range grs {
 		*gs = append(*gs, GameSession{
-			ID:        gr.ID,
+			GameSessionShared: GameSessionShared[result.ResultMap]{
+				ID:      gr.ID,
+				Rounds:  gr.Rounds,
+				Result:  result.FromString(gr.Result),
+				Wager:   gr.Wager,
+				Started: gr.Started,
+				Ended:   gr.Ended,
+			},
 			SessionID: gr.SessionID,
 			GameID:    gr.GameID,
-			Rounds:    gr.Rounds,
-			Result:    result.FromString(gr.Result),
-			Wager:     gr.Wager,
-			Started:   gr.Started,
-			Ended:     gr.Ended,
 		})
 	}
 	return nil
@@ -193,13 +194,15 @@ func (g *gsService) Create(sessionID db.ID, gameID db.ID, wager int) (GameSessio
 		return GameSession{}, err
 	}
 	gs := GameSession{
+		GameSessionShared: GameSessionShared[result.ResultMap]{
+			Wager:   wager,
+			Rounds:  1,
+			Result:  result.New(pt),
+			Started: NewTime(),
+			Ended:   nil,
+		},
 		SessionID: sessionID,
 		GameID:    gameID,
-		Wager:     wager,
-		Rounds:    1,
-		Result:    result.New(pt),
-		Started:   NewTime(),
-		Ended:     nil,
 	}
 	e, err := g.store.DB.Exec(`INSERT 
 INTO game_session (session_id, game_id, wager, started, result)

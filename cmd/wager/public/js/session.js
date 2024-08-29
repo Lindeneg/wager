@@ -272,9 +272,9 @@ const renderSelectedResult = () => {
     const selected = ctx.table.selected();
     if (!selected) return hideEl(selectedWrapper);
     showEl(selectedWrapper, selectedResult, selectedTitle);
-    selectedTitle.innerText = `#${selected.val("id")} ${selected.val(
-        "game"
-    )} Result`;
+    selectedTitle.innerHTML = `#${selected.val(
+        "id"
+    )} <span class="cap">${selected.val("game")}</span> Result`;
     selectedResult.innerHTML = "";
     const result = selected.state().result;
     Object.keys(result).forEach((key) => {
