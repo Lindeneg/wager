@@ -58,8 +58,14 @@ func main() {
 
 	srv := services.InitServices(s)
 
-	s.RunFile("drop")
-	s.RunFile("schema")
+	err = s.RunFile("drop")
+	if err != nil {
+		log.Fatal("DROP", err)
+	}
+	err = s.RunFile("schema")
+	if err != nil {
+		log.Fatal("SCHEMA", err)
+	}
 
 	if seedMode == "none" {
 		return
@@ -81,14 +87,26 @@ func main() {
 	}
 
 	for i, ss := range sessions {
-		sn, _ := srv.Session.Create(ss.users)
+		sn, err := srv.Session.Create(ss.users)
+		if err != nil {
+			log.Fatal("CREATE", err)
+		}
 		for _, gs := range ss.gameSessions {
-			gsn, _ := srv.GSession.Create(sn.ID, gs.gameID, gs.wager)
+			gsn, err := srv.GSession.Create(sn.ID, gs.gameID, gs.wager)
+			if err != nil {
+				log.Fatal("GCREATE", err)
+			}
 			gs.after(gsn.ID)
-			srv.GSession.End(gsn.ID)
+			_, err = srv.GSession.End(gsn.ID)
+			if err != nil {
+				log.Fatal("GEND", err)
+			}
 		}
 		if !open || i < len(sessions)-1 {
-			srv.Session.End(sn.ID)
+			_, err := srv.Session.End(sn.ID)
+			if err != nil {
+				log.Fatal("END", err)
+			}
 		}
 	}
 }
@@ -139,10 +157,19 @@ func randomGameSessions(srv *services.Services, p []db.ID, n int) []seedGameSess
 			gameID: game(),
 			wager:  wager(),
 			after: func(id db.ID) {
-				srv.GSession.EndRound(id, winner(p))
+				_, err := srv.GSession.EndRound(id, winner(p))
+				if err != nil {
+					log.Fatal("END ROUND", err)
+				}
 				if roll() {
-					srv.GSession.NewRound(id, wager())
-					srv.GSession.EndRound(id, winner(p))
+					_, err = srv.GSession.NewRound(id, wager())
+					if err != nil {
+						log.Fatal("NEW ROUND", err)
+					}
+					_, err = srv.GSession.EndRound(id, winner(p))
+					if err != nil {
+						log.Fatal("END ROUND", err)
+					}
 				}
 			},
 		})
