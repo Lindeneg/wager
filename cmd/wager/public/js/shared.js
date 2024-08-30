@@ -20,6 +20,8 @@ export const tableProps = {
                     return "-";
                 }
                 return durationInMins(data["started"], data["ended"]);
+            case "rounds":
+                return val.length;
             default:
                 return val;
         }

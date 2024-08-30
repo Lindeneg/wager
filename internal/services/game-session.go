@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/lindeneg/wager/internal/db"
@@ -11,12 +12,11 @@ import (
 )
 
 type GameSessionShared[T string | result.ResultMap] struct {
-	ID      db.ID      `json:"id"`
-	Rounds  int        `json:"rounds"`
-	Wager   int        `json:"wager"`
-	Result  T          `json:"result"`
-	Started time.Time  `json:"started"`
-	Ended   *time.Time `json:"ended"`
+	ID      db.ID             `json:"id"`
+	Rounds  GameSessionRounds `json:"rounds"`
+	Result  T                 `json:"result"`
+	Started time.Time         `json:"started"`
+	Ended   *time.Time        `json:"ended"`
 }
 
 type GameSession struct {
@@ -53,7 +53,6 @@ func (gs *GameSessions) Scan(src any) error {
 				ID:      gr.ID,
 				Rounds:  gr.Rounds,
 				Result:  result.FromString(gr.Result),
-				Wager:   gr.Wager,
 				Started: gr.Started,
 				Ended:   gr.Ended,
 			},
@@ -85,6 +84,7 @@ type GameSessionService interface {
 
 type gsService struct {
 	store *db.Datastore
+	r     GameSessionRoundService
 	pt    ParticipantService
 }
 
@@ -110,8 +110,7 @@ func (g *gsService) FromSession(id db.ID, p *pagination.P) ([]GameSession, error
 	}
 	sessions := make([]GameSession, 0)
 	rows, err := g.store.DB.Query(
-		pagination.MakeQuery(`SELECT * from game_session
-WHERE session_id = ? ORDER BY ended DESC`, p), id)
+		pagination.MakeQuery(withRounds("WHERE session_id = ? ORDER BY ended DESC"), p), id)
 	if err != nil {
 		return sessions, err
 	}
@@ -121,8 +120,7 @@ WHERE session_id = ? ORDER BY ended DESC`, p), id)
 		var sResult string
 		err = rows.Scan(
 			&s.ID, &s.SessionID, &s.GameID,
-			&sResult, &s.Rounds, &s.Wager,
-			&s.Started, &s.Ended)
+			&sResult, &s.Started, &s.Ended, &s.Rounds)
 		if err != nil {
 			return sessions, err
 		}
@@ -159,12 +157,11 @@ func (g *gsService) CountFromSession(sessionID db.ID) (int, error) {
 func (g *gsService) ActiveFromSession(sessionID db.ID) (GameSession, error) {
 	var gs GameSession
 	var sResult string
-	err := g.store.DB.QueryRow(
-		"SELECT * FROM game_session WHERE session_id = ? AND ended IS NULL",
+	err := g.store.DB.QueryRow(withRounds("WHERE session_id = ? AND ended IS NULL"),
 		sessionID,
 	).Scan(
 		&gs.ID, &gs.SessionID, &gs.GameID, &sResult,
-		&gs.Rounds, &gs.Wager, &gs.Started, &gs.Ended)
+		&gs.Started, &gs.Ended, &gs.Rounds)
 	if err != nil {
 		return gs, err
 	}
@@ -175,12 +172,9 @@ func (g *gsService) ActiveFromSession(sessionID db.ID) (GameSession, error) {
 func (g *gsService) ByPK(id db.ID) (GameSession, error) {
 	var gs GameSession
 	var sResult string
-	err := g.store.DB.QueryRow(
-		"SELECT * from game_session WHERE id = ?",
-		id,
-	).Scan(
+	err := g.store.DB.QueryRow(withRounds("WHERE id = ?"), id).Scan(
 		&gs.ID, &gs.SessionID, &gs.GameID, &sResult,
-		&gs.Rounds, &gs.Wager, &gs.Started, &gs.Ended)
+		&gs.Started, &gs.Ended, &gs.Rounds)
 	if err != nil {
 		return gs, err
 	}
@@ -195,8 +189,7 @@ func (g *gsService) Create(sessionID db.ID, gameID db.ID, wager int) (GameSessio
 	}
 	gs := GameSession{
 		GameSessionShared: GameSessionShared[result.ResultMap]{
-			Wager:   wager,
-			Rounds:  1,
+			Rounds:  GameSessionRounds{},
 			Result:  result.New(pt),
 			Started: NewTime(),
 			Ended:   nil,
@@ -204,12 +197,11 @@ func (g *gsService) Create(sessionID db.ID, gameID db.ID, wager int) (GameSessio
 		SessionID: sessionID,
 		GameID:    gameID,
 	}
-	e, err := g.store.DB.Exec(`INSERT 
-INTO game_session (session_id, game_id, wager, started, result)
-    VALUES (?, ?, ?, ?, ?)`,
+	e, err := g.store.DB.Exec(`INSERT
+INTO game_session (session_id, game_id, started, result)
+    VALUES (?, ?, ?, ?)`,
 		gs.SessionID,
 		gs.GameID,
-		gs.Wager,
 		FormatTime(gs.Started),
 		gs.Result.String())
 	if err != nil {
@@ -220,6 +212,11 @@ INTO game_session (session_id, game_id, wager, started, result)
 		return gs, err
 	}
 	gs.ID = db.ID(id)
+	gr, err := g.r.Create(gs.ID, wager, pt, 1)
+	if err != nil {
+		return gs, err
+	}
+	gs.Rounds = append(gs.Rounds, gr)
 	return gs, nil
 }
 
@@ -231,19 +228,15 @@ func (g *gsService) NewRound(id db.ID, wager int) (GameSession, error) {
 	if gs.Ended != nil {
 		return gs, errvar.ErrGameSessionEnded
 	}
-	if gs.Wager > 0 {
-		return gs, errvar.ErrGameSessionActive
-	}
-	gs.Rounds += 1
-	gs.Wager = wager
-	_, err = g.store.DB.Exec(
-		"UPDATE game_session SET rounds = ?, wager = ? WHERE id = ?",
-		gs.Rounds,
-		gs.Wager,
-		id)
+	pt, err := g.pt.FromSession(gs.SessionID, nil)
 	if err != nil {
 		return gs, err
 	}
+	gr, err := g.r.Create(id, wager, pt, len(gs.Rounds)+1)
+	if err != nil {
+		return gs, err
+	}
+	gs.Rounds = append([]GameSessionRound{gr}, gs.Rounds...)
 	return gs, nil
 }
 
@@ -255,18 +248,18 @@ func (g *gsService) EndRound(id db.ID, winnerID db.ID) (GameSession, error) {
 	if gs.Ended != nil {
 		return gs, errvar.ErrGameSessionEnded
 	}
-	if gs.Wager <= 0 {
-		return gs, errvar.ErrGameSessionNoActive
-	}
 	if !gs.Result.Exists(winnerID) {
 		return gs, errvar.ErrWinnerIsNotParticipant
 	}
-	gs.Result.AddWinner(winnerID, gs.Wager)
+	gr, err := g.r.EndActive(id, winnerID)
+	if err != nil {
+		return gs, err
+	}
+	gs.Result.AddWinner(winnerID, gr.Wager)
 	gs.Result.Resolve()
-	gs.Wager = 0
 	_, err = g.store.DB.Exec(
-		"UPDATE game_session SET result = ?, wager = ? WHERE id = ?",
-		gs.Result.String(), gs.Wager, id)
+		"UPDATE game_session SET result = ? WHERE id = ?",
+		gs.Result.String(), id)
 	if err != nil {
 		return gs, err
 	}
@@ -281,7 +274,7 @@ func (g *gsService) End(id db.ID) (GameSession, error) {
 	if gs.Ended != nil {
 		return gs, errvar.ErrGameSessionEnded
 	}
-	if gs.Wager > 0 {
+	if g.r.HasActive(id) {
 		return gs, errvar.ErrGameSessionActive
 	}
 	gs.Ended = GetPtr(NewTime())
@@ -302,7 +295,7 @@ func (g *gsService) Cancel(id db.ID) error {
 	if gs.Ended != nil {
 		return errvar.ErrGameSessionActive
 	}
-	if gs.Rounds > 1 {
+	if len(gs.Rounds) > 1 {
 		return errvar.ErrGameSessionWager
 	}
 	_, err = g.store.DB.Exec("DELETE FROM game_session WHERE id = ?", id)
@@ -312,6 +305,37 @@ func (g *gsService) Cancel(id db.ID) error {
 	return nil
 }
 
-func NewGameSessionService(store *db.Datastore, pt ParticipantService) GameSessionService {
-	return &gsService{store, pt}
+func NewGameSessionService(
+	store *db.Datastore,
+	r GameSessionRoundService,
+	pt ParticipantService,
+) GameSessionService {
+	return &gsService{store, r, pt}
+}
+
+func withRounds(q string) string {
+	return fmt.Sprintf(`SELECT
+    s.id,
+    s.session_id,
+    s.game_id,
+    s.result,
+    s.started,
+    s.ended,
+    COALESCE(
+            (SELECT json_group_array(
+                            json_object(
+                                    'id', gr.id,
+                                    'round', gr.round,
+                                    'wager', gr.wager,
+                                    'active', gr.active,
+                                    'result', gr.result
+                            )
+                    )
+             FROM game_session_round gr
+             WHERE gr.game_session_id = s.id
+             ORDER BY gr.round DESC
+            ), '[]'
+    ) AS rounds
+FROM
+    game_session s %s`, q)
 }

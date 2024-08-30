@@ -52,7 +52,7 @@ func NewGameSessionRows(sessions []services.GameSession, games []services.Game) 
 		return SessionRow{
 			"id":       s.ID,
 			"game":     getNameFromID(s.GameID, games),
-			"rounds":   s.Rounds,
+			"rounds":   len(s.Rounds),
 			"started":  s.Started,
 			"result":   s.Result,
 			"ended":    s.Ended,

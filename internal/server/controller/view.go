@@ -97,6 +97,7 @@ type sessionProps struct {
 	Users             []services.User
 	IsSessionOver     bool
 	ActiveGameSession *services.GameSession
+	ActiveRound       *services.GameSessionRound
 	Wager             int
 	EndSession        bool
 	CancelSession     bool
@@ -142,6 +143,7 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 	}
 	isSessionOver := ss.Result != nil
 	var activeGameSession *services.GameSession = nil
+	var activeRound *services.GameSessionRound = nil
 	var rs result.ResultMap
 	wager := 0
 	if isSessionOver {
@@ -149,7 +151,10 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 	} else if len(gs) > 0 && gs[0].Ended == nil {
 		activeGameSession = &gs[0]
 		rs = gs[0].Result
-		wager = gs[0].Wager
+		if active, idx := activeGameSession.Rounds.Active(); idx > -1 {
+			activeRound = &active
+			wager = activeRound.Wager
+		}
 	}
 	props := sessionProps{
 		commonProps:       newCommonProps(templates.GameSessionCols, rs, p, usrs, count),
@@ -157,6 +162,7 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 		Users:             usrs,
 		IsSessionOver:     isSessionOver,
 		ActiveGameSession: activeGameSession,
+		ActiveRound:       activeRound,
 		Wager:             wager,
 		EndSession:        !isSessionOver && len(gs) > 0 && activeGameSession == nil,
 		CancelSession:     !isSessionOver && len(gs) == 0,
@@ -164,9 +170,9 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 		EndRound:          !isSessionOver && activeGameSession != nil && wager > 0,
 		StartGame:         !isSessionOver && activeGameSession == nil,
 		EndGame: !isSessionOver && activeGameSession != nil &&
-			activeGameSession.Wager == 0 && activeGameSession.Result.ResolvedOnce(),
+			wager == 0 && activeGameSession.Result.ResolvedOnce(),
 		CancelGame: !isSessionOver && activeGameSession != nil &&
-			activeGameSession.Rounds == 1 && !activeGameSession.Result.ResolvedOnce(),
+			len(activeGameSession.Rounds) == 1 && !activeGameSession.Result.ResolvedOnce(),
 		HideActiveResult: !isSessionOver && activeGameSession == nil,
 	}
 	props.Title += " Session"

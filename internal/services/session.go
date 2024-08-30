@@ -328,10 +328,23 @@ func withSessions(q string) string {
                                     'session_id', gs.session_id,
                                     'game_id', gs.game_id,
                                     'result', gs.result,
-                                    'rounds', gs.rounds,
-                                    'wager', gs.wager,
                                     'started', gs.started,
-                                    'ended', gs.ended
+                                    'ended', gs.ended,
+                                    'rounds', COALESCE(
+                                            (SELECT json_group_array(
+                                                            json_object(
+                                                                    'id', gr.id,
+                                                                    'round', gr.round,
+                                                                    'wager', gr.wager,
+                                                                    'active', gr.active,
+                                                                    'result', gr.result
+                                                            )
+                                                    )
+                                             FROM game_session_round gr
+                                             WHERE gr.game_session_id = gs.id
+                                             ORDER BY gr.round DESC
+                                            ), '[]'
+                                    )
                             )
                     )
              FROM game_session gs

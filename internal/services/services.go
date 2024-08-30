@@ -15,7 +15,8 @@ type Services struct {
 func InitServices(store *db.Datastore) *Services {
 	u := NewUserService(store)
 	pt := NewParticipantService(store)
-	g := NewGameSessionService(store, pt)
+	r := NewGameSessionRoundService(store)
+	g := NewGameSessionService(store, r, pt)
 	return &Services{
 		User:        u,
 		Game:        NewGameService(store),
