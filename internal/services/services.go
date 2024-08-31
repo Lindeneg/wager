@@ -16,12 +16,12 @@ func InitServices(store *db.Datastore) *Services {
 	u := NewUserService(store)
 	pt := NewParticipantService(store)
 	r := NewGameSessionRoundService(store)
-	g := NewGameSessionService(store, r, pt)
+	s := NewSessionService(store, u)
 	return &Services{
 		User:        u,
 		Game:        NewGameService(store),
 		Participant: pt,
-		GSession:    g,
-		Session:     NewSessionService(store, u, g, pt),
+		GSession:    NewGameSessionService(store, s, r, pt),
+		Session:     s,
 	}
 }

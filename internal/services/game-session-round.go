@@ -149,15 +149,16 @@ func (g *gsrService) Create(gid db.ID, w int, p []Participant, r int) (GameSessi
 			Round:  r,
 			Wager:  w,
 			Result: result.New(p),
+			Active: 1,
 		},
 		GameSessionID: gid,
 	}
 	e, err := g.store.DB.Exec(`INSERT 
-INTO game_session_round (game_session_id, result, wager, round)
-    VALUES (?, ?, ?, ?)`,
+INTO game_session_round (game_session_id, result, wager, round, active)
+    VALUES (?, ?, ?, ?, ?)`,
 		gr.GameSessionID,
 		gr.Result.String(),
-		gr.Wager, gr.Round)
+		gr.Wager, gr.Round, gr.Active)
 	if err != nil {
 		return gr, err
 	}

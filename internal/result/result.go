@@ -27,6 +27,10 @@ func FromString(s string) ResultMap {
 	return r
 }
 
+func (r ResultMap) ResultMap() ResultMap {
+	return r
+}
+
 func (r ResultMap) AddWinner(winnerID db.ID, wager int) {
 	won := int(math.Floor(float64(wager) / float64((len(r) - 1))))
 	for k, v := range r {

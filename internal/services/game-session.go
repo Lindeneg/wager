@@ -84,6 +84,7 @@ type GameSessionService interface {
 
 type gsService struct {
 	store *db.Datastore
+	s     SessionService
 	r     GameSessionRoundService
 	pt    ParticipantService
 }
@@ -251,12 +252,17 @@ func (g *gsService) EndRound(id db.ID, winnerID db.ID) (GameSession, error) {
 	if !gs.Result.Exists(winnerID) {
 		return gs, errvar.ErrWinnerIsNotParticipant
 	}
+	_, idx := gs.Rounds.Active()
+	if idx == -1 {
+		return gs, errvar.ErrGameSessionNoActive
+	}
 	gr, err := g.r.EndActive(id, winnerID)
 	if err != nil {
 		return gs, err
 	}
 	gs.Result.AddWinner(winnerID, gr.Wager)
 	gs.Result.Resolve()
+	gs.Rounds[idx] = gr
 	_, err = g.store.DB.Exec(
 		"UPDATE game_session SET result = ? WHERE id = ?",
 		gs.Result.String(), id)
@@ -277,6 +283,10 @@ func (g *gsService) End(id db.ID) (GameSession, error) {
 	if g.r.HasActive(id) {
 		return gs, errvar.ErrGameSessionActive
 	}
+	pt, err := g.pt.FromSession(gs.SessionID, nil)
+	if gs.Ended != nil {
+		return gs, err
+	}
 	gs.Ended = GetPtr(NewTime())
 	_, err = g.store.DB.Exec(
 		"UPDATE game_session SET ended = ? WHERE id = ?",
@@ -284,6 +294,7 @@ func (g *gsService) End(id db.ID) (GameSession, error) {
 	if err != nil {
 		return gs, err
 	}
+	err = g.s.UpdateResult(gs.SessionID, pt, gs.Result)
 	return gs, nil
 }
 
@@ -307,14 +318,31 @@ func (g *gsService) Cancel(id db.ID) error {
 
 func NewGameSessionService(
 	store *db.Datastore,
+	s SessionService,
 	r GameSessionRoundService,
 	pt ParticipantService,
 ) GameSessionService {
-	return &gsService{store, r, pt}
+	return &gsService{store, s, r, pt}
 }
 
 func withRounds(q string) string {
-	return fmt.Sprintf(`SELECT
+	return fmt.Sprintf(`WITH ordered_rounds AS (
+    SELECT
+        gr.id,
+        gr.game_session_id,
+        gr.round,
+        gr.wager,
+        gr.active,
+        gr.result
+    FROM
+        game_session_round gr
+    WHERE
+        gr.game_session_id = s.id
+    ORDER BY
+        gr.round DESC
+)
+
+SELECT
     s.id,
     s.session_id,
     s.game_id,
@@ -322,18 +350,18 @@ func withRounds(q string) string {
     s.started,
     s.ended,
     COALESCE(
-            (SELECT json_group_array(
-                            json_object(
-                                    'id', gr.id,
-                                    'round', gr.round,
-                                    'wager', gr.wager,
-                                    'active', gr.active,
-                                    'result', gr.result
-                            )
-                    )
-             FROM game_session_round gr
-             WHERE gr.game_session_id = s.id
-             ORDER BY gr.round DESC
+            (
+                SELECT json_group_array(
+                               json_object(
+                                       'id', o.id,
+                                       'game_session_id', o.game_session_id,
+                                       'round', o.round,
+                                       'wager', o.wager,
+                                       'active', o.active,
+                                       'result', o.result
+                               )
+                       )
+                FROM ordered_rounds o
             ), '[]'
     ) AS rounds
 FROM

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS game
 CREATE TABLE IF NOT EXISTS session
 (
     id      INTEGER PRIMARY KEY AUTOINCREMENT,
-    result  TEXT DEFAULT NULL,
+    result  TEXT NOT NULL,
     started TIMESTAMP NOT NULL,
     ended   TIMESTAMP DEFAULT NULL
 );
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS game_session_round
     result          TEXT      NOT NULL,
     round           INT       NOT NULL,
     wager           INT       NOT NULL,
-    active          INT   NOT NULL DEFAULT 1,
-    FOREIGN KEY (game_session_id) REFERENCES game_session (id)
+    active          INT       NOT NULL DEFAULT 1,
+    FOREIGN KEY (game_session_id) REFERENCES game_session (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS event

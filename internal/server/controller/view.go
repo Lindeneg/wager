@@ -97,7 +97,6 @@ type sessionProps struct {
 	Users             []services.User
 	IsSessionOver     bool
 	ActiveGameSession *services.GameSession
-	ActiveRound       *services.GameSessionRound
 	Wager             int
 	EndSession        bool
 	CancelSession     bool
@@ -141,9 +140,8 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 		utils.RenderErrSlim(w, r, err)
 		return
 	}
-	isSessionOver := ss.Result != nil
+	isSessionOver := ss.Ended != nil
 	var activeGameSession *services.GameSession = nil
-	var activeRound *services.GameSessionRound = nil
 	var rs result.ResultMap
 	wager := 0
 	if isSessionOver {
@@ -152,8 +150,7 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 		activeGameSession = &gs[0]
 		rs = gs[0].Result
 		if active, idx := activeGameSession.Rounds.Active(); idx > -1 {
-			activeRound = &active
-			wager = activeRound.Wager
+			wager = active.Wager
 		}
 	}
 	props := sessionProps{
@@ -162,7 +159,6 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 		Users:             usrs,
 		IsSessionOver:     isSessionOver,
 		ActiveGameSession: activeGameSession,
-		ActiveRound:       activeRound,
 		Wager:             wager,
 		EndSession:        !isSessionOver && len(gs) > 0 && activeGameSession == nil,
 		CancelSession:     !isSessionOver && len(gs) == 0,

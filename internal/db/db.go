@@ -11,6 +11,10 @@ import (
 
 type ID uint
 
+func (id ID) ResultID() ID {
+	return id
+}
+
 type Datastore struct {
 	DB      *sql.DB
 	Context context.Context

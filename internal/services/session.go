@@ -61,6 +61,7 @@ type SessionService interface {
 
 	Create(userIDs []db.ID) (SessionWithGames, error)
 
+	UpdateResult(id db.ID, p []Participant, r result.ResultMap) error
 	End(id db.ID) (SessionWithGames, error)
 	Cancel(id db.ID) error
 }
@@ -68,8 +69,6 @@ type SessionService interface {
 type sService struct {
 	store *db.Datastore
 	u     UserService
-	g     GameSessionService
-	pt    ParticipantService
 }
 
 func (s *sService) Count() (int, error) {
@@ -152,7 +151,7 @@ func (s *sService) All(p *pagination.P) ([]Session, error) {
 }
 
 func (s *sService) Resolved(p *pagination.P) ([]Session, error) {
-	return s.all("SELECT * FROM session WHERE ended IS NOT NULL AND result IS NOT NULL", p)
+	return s.all("SELECT * FROM session WHERE ended IS NOT NULL", p)
 }
 
 func (s *sService) getActive() (SessionWithGames, error) {
@@ -217,13 +216,14 @@ func (s *sService) Create(userIDs []db.ID) (SessionWithGames, error) {
 	ss.Started = NewTime()
 	ss.GameSessions = []GameSession{}
 	ss.Users = userIDs
+	ss.Result = result.New(userIDs)
 	tx, err := s.store.DB.Begin()
 	if err != nil {
 		return ss, err
 	}
 	e, err := tx.Exec(
-		"INSERT INTO session (started) VALUES (?)",
-		FormatTime(ss.Started))
+		"INSERT INTO session (started, result) VALUES (?, ?)",
+		FormatTime(ss.Started), ss.Result.String())
 	if err != nil {
 		return ss, err
 	}
@@ -257,27 +257,30 @@ func (s *sService) End(id db.ID) (SessionWithGames, error) {
 	if err != nil {
 		return ss, err
 	}
-	if ss.Ended != nil || ss.Result != nil {
+	if ss.Ended != nil {
 		return ss, errvar.ErrSessionEnded
 	}
-	pts, err := s.pt.FromSession(id, nil)
-	if err != nil {
-		return ss, err
-	}
-	gs, err := s.g.FromSession(id, nil)
-	if err != nil {
-		return ss, err
-	}
-	ss.Result = result.Merge(pts, gs...)
-	ss.Result.Resolve()
 	ss.Ended = GetPtr(NewTime())
 	_, err = s.store.DB.Exec(
-		"UPDATE session SET ended = ?, result = ? WHERE id = ?",
-		FormatTime(*ss.Ended), ss.Result.String(), id)
+		"UPDATE session SET ended = ? WHERE id = ?",
+		FormatTime(*ss.Ended), id)
 	if err != nil {
 		return ss, err
 	}
 	return ss, nil
+}
+
+func (s *sService) UpdateResult(id db.ID, p []Participant, r result.ResultMap) error {
+	ss, err := s.ByPK(id)
+	if err != nil {
+		return err
+	}
+	ss.Result = result.Merge(p, ss.Result, r)
+	ss.Result.Resolve()
+	_, err = s.store.DB.Exec(
+		"UPDATE session SET result = ? WHERE id = ?",
+		ss.Result.String(), id)
+	return nil
 }
 
 func (s *sService) Cancel(id db.ID) error {
@@ -285,7 +288,7 @@ func (s *sService) Cancel(id db.ID) error {
 	if err != nil {
 		return err
 	}
-	if ss.Ended != nil || ss.Result != nil {
+	if ss.Ended != nil {
 		return errvar.ErrSessionEnded
 	}
 	_, err = s.store.DB.Exec("DELETE FROM session WHERE id = ?", id)
@@ -309,14 +312,25 @@ func (s *sService) Result() (result.ResultMap, error) {
 	return rr, nil
 }
 
-func NewSessionService(
-	s *db.Datastore, u UserService, g GameSessionService, pt ParticipantService,
-) SessionService {
-	return &sService{s, u, g, pt}
+func NewSessionService(s *db.Datastore, u UserService) SessionService {
+	return &sService{s, u}
 }
 
 func withSessions(q string) string {
-	return fmt.Sprintf(`SELECT
+	return fmt.Sprintf(`WITH ordered_games AS (
+    SELECT
+        gs.id,
+        gs.session_id,
+        gs.game_id,
+        gs.result,
+        gs.started,
+        gs.ended
+    FROM game_session gs
+    WHERE gs.session_id = s.id
+    ORDER BY gs.ended DESC
+)
+
+SELECT
     s.id,
     s.result,
     s.started,
@@ -324,32 +338,30 @@ func withSessions(q string) string {
     COALESCE(
             (SELECT json_group_array(
                             json_object(
-                                    'id', gs.id,
-                                    'session_id', gs.session_id,
-                                    'game_id', gs.game_id,
-                                    'result', gs.result,
-                                    'started', gs.started,
-                                    'ended', gs.ended,
+                                    'id', g.id,
+                                    'session_id', g.session_id,
+                                    'game_id', g.game_id,
+                                    'result', g.result,
+                                    'started', g.started,
+                                    'ended', g.ended,
                                     'rounds', COALESCE(
                                             (SELECT json_group_array(
                                                             json_object(
-                                                                    'id', gr.id,
-                                                                    'round', gr.round,
-                                                                    'wager', gr.wager,
-                                                                    'active', gr.active,
-                                                                    'result', gr.result
+                                                                    'id', o.id,
+                                                                    'game_session_id', o.game_session_id,
+                                                                    'round', o.round,
+                                                                    'wager', o.wager,
+                                                                    'active', o.active,
+                                                                    'result', o.result
                                                             )
                                                     )
-                                             FROM game_session_round gr
-                                             WHERE gr.game_session_id = gs.id
-                                             ORDER BY gr.round DESC
+                                             FROM game_session_round o
+                                             WHERE o.game_session_id = g.id
                                             ), '[]'
-                                    )
+                                        )
                             )
                     )
-             FROM game_session gs
-             WHERE gs.session_id = s.id
-             ORDER BY gs.ended DESC
+             FROM ordered_games g
             ), '[]'
     ) AS gameSessions,
     COALESCE(
