@@ -51,6 +51,12 @@ CREATE TABLE IF NOT EXISTS game_session_round
     FOREIGN KEY (game_session_id) REFERENCES game_session (id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS result
+(
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    data            TEXT      NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS event
 (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,

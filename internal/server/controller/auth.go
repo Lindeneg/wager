@@ -102,6 +102,11 @@ func (c Controller) Signup(w http.ResponseWriter, r *http.Request) {
 		utils.InternalErr(w, r)
 		return
 	}
+	err = c.s.Result.UpdateUsers()
+	if err != nil {
+		utils.InternalErr(w, r)
+		return
+	}
 	utils.SetAuthCookie(w, c.e, t)
 	w.WriteHeader(http.StatusCreated)
 }

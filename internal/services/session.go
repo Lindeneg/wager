@@ -56,7 +56,6 @@ type SessionService interface {
 	AllWithSessions(pg *pagination.P) ([]SessionWithGames, error)
 
 	Count() (int, error)
-	Result() (result.ResultMap, error)
 	HasActive() bool
 
 	Create(userIDs []db.ID) (SessionWithGames, error)
@@ -69,6 +68,7 @@ type SessionService interface {
 type sService struct {
 	store *db.Datastore
 	u     UserService
+	r     ResultService
 }
 
 func (s *sService) Count() (int, error) {
@@ -260,6 +260,10 @@ func (s *sService) End(id db.ID) (SessionWithGames, error) {
 	if ss.Ended != nil {
 		return ss, errvar.ErrSessionEnded
 	}
+	err = s.r.Update(ss.Result)
+	if err != nil {
+		return ss, err
+	}
 	ss.Ended = GetPtr(NewTime())
 	_, err = s.store.DB.Exec(
 		"UPDATE session SET ended = ? WHERE id = ?",
@@ -298,22 +302,8 @@ func (s *sService) Cancel(id db.ID) error {
 	return nil
 }
 
-func (s *sService) Result() (result.ResultMap, error) {
-	ses, err := s.Resolved(nil)
-	if err != nil {
-		return result.ResultMap{}, err
-	}
-	usrs, err := s.u.All(nil)
-	if err != nil {
-		return result.ResultMap{}, err
-	}
-	rr := result.Merge(usrs, ses...)
-	rr.Resolve()
-	return rr, nil
-}
-
-func NewSessionService(s *db.Datastore, u UserService) SessionService {
-	return &sService{s, u}
+func NewSessionService(s *db.Datastore, u UserService, r ResultService) SessionService {
+	return &sService{s, u, r}
 }
 
 func withSessions(q string) string {

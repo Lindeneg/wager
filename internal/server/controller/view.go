@@ -64,7 +64,7 @@ func newCommonProps(
 }
 
 func (c Controller) HomePage(w http.ResponseWriter, r *http.Request) {
-	rs, err := c.s.Session.Result()
+	rs, err := c.s.Result.Current()
 	if err != nil {
 		utils.RenderErrSlim(w, r, err)
 		return
