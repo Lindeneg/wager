@@ -41,6 +41,12 @@ func ParseFS(fs fs.FS, patterns ...string) Template {
 			"userID": func(user services.User) string {
 				return fmt.Sprintf("userid-%d", user.ID)
 			},
+			"str": func(r services.GameSessionRounds) string {
+				if r == nil {
+					return ""
+				}
+				return r.String()
+			},
 		})
 	tpl, err := tpl.ParseFS(fs, patterns...)
 	if err != nil {

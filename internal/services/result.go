@@ -57,8 +57,9 @@ func (r *rService) Update(rm result.ResultMap) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.store.DB.Exec("UPDATE result SET data = ? WHERE id = 1",
-		result.Merge(u, c, rm).String())
+	rmn := result.Merge(u, c, rm)
+	rmn.Resolve()
+	_, err = r.store.DB.Exec("UPDATE result SET data = ? WHERE id = 1", rmn.String())
 	return nil
 }
 

@@ -4,6 +4,7 @@ import (
 	"math"
 	"net/http"
 
+	"github.com/lindeneg/wager/internal/db"
 	"github.com/lindeneg/wager/internal/pagination"
 	"github.com/lindeneg/wager/internal/result"
 	"github.com/lindeneg/wager/internal/server/utils"
@@ -93,10 +94,13 @@ func (c Controller) HomePage(w http.ResponseWriter, r *http.Request) {
 
 type sessionProps struct {
 	commonProps
+	ID                db.ID
 	Games             []services.Game
 	Users             []services.User
 	IsSessionOver     bool
 	ActiveGameSession *services.GameSession
+	ActiveRound       *services.GameSessionRound
+	ActiveResult      []templates.ResultBox
 	Wager             int
 	EndSession        bool
 	CancelSession     bool
@@ -105,7 +109,8 @@ type sessionProps struct {
 	StartGame         bool
 	EndGame           bool
 	CancelGame        bool
-	HideActiveResult  bool
+	PrevRound         bool
+	NextRound         bool
 }
 
 func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
@@ -142,23 +147,30 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 	}
 	isSessionOver := ss.Ended != nil
 	var activeGameSession *services.GameSession = nil
-	var rs result.ResultMap
+	var activeRound *services.GameSessionRound = nil
+	ar := []templates.ResultBox{}
 	wager := 0
 	if isSessionOver {
-		rs = ss.Result
 	} else if len(gs) > 0 && gs[0].Ended == nil {
 		activeGameSession = &gs[0]
-		rs = gs[0].Result
-		if active, idx := activeGameSession.Rounds.Active(); idx > -1 {
-			wager = active.Wager
+		a, i := activeGameSession.Rounds.Active()
+		if i > -1 {
+			activeRound = &a
+			wager = activeRound.Wager
+			ar = templates.NewResultBoxes(activeRound.Result, usrs)
+		} else {
+			ar = templates.NewResultBoxes(activeGameSession.Result, usrs)
 		}
 	}
 	props := sessionProps{
-		commonProps:       newCommonProps(templates.GameSessionCols, rs, p, usrs, count),
+		commonProps:       newCommonProps(templates.GameSessionCols, ss.Result, p, usrs, count),
+		ID:                ss.ID,
 		Games:             games,
 		Users:             usrs,
 		IsSessionOver:     isSessionOver,
 		ActiveGameSession: activeGameSession,
+		ActiveRound:       activeRound,
+		ActiveResult:      ar,
 		Wager:             wager,
 		EndSession:        !isSessionOver && len(gs) > 0 && activeGameSession == nil,
 		CancelSession:     !isSessionOver && len(gs) == 0,
@@ -169,7 +181,9 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 			wager == 0 && activeGameSession.Result.ResolvedOnce(),
 		CancelGame: !isSessionOver && activeGameSession != nil &&
 			len(activeGameSession.Rounds) == 1 && !activeGameSession.Result.ResolvedOnce(),
-		HideActiveResult: !isSessionOver && activeGameSession == nil,
+		PrevRound: activeGameSession != nil && (len(activeGameSession.Rounds) > 1 ||
+			(len(activeGameSession.Rounds) == 1 && activeRound == nil)),
+		NextRound: activeRound != nil,
 	}
 	props.Title += " Session"
 	props.Rows = templates.NewGameSessionRows(gs, games)

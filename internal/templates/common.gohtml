@@ -42,9 +42,8 @@
 {{$color := index . 3}}
 {{$total := index . 4}}
 {{$obj := index . 5}}
-    <p id="{{$name}}-result-{{$opt1}}-p"> {{$name}} {{$opt1}}
+    <p> {{$name}} {{$opt1}}
     <b
-        id="{{$name}}-result-{{$opt1}}-val"
         class="underline"
         {{if gt $total 0}}
             style="color:{{$color}}">
@@ -57,10 +56,10 @@
     </p>
     {{$length := len $obj}}
     {{if gt $length 0}}
-    <ul id="{{$name}}-result-{{$opt1}}-ul">
+    <ul>
         {{range $k, $v := $obj}}
-        <li id="{{$name}}-result-{{$k}}-li">
-            <i><span id="{{$name}}-result-{{$k}}-val">{{$v}}</span> {{$opt2}} {{$k}}</i>
+        <li>
+            <i><span>{{$v}}</span> {{$opt2}} {{$k}}</i>
         </li>
         {{end}}
     </ul>

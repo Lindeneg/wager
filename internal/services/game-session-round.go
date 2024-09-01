@@ -38,6 +38,14 @@ func (gs *GameSessionRounds) Active() (GameSessionRound, int) {
 	return GameSessionRound{}, -1
 }
 
+func (gs *GameSessionRounds) String() string {
+	r, err := json.Marshal(gs)
+	if err != nil {
+		return ""
+	}
+	return string(r)
+}
+
 func (gs *GameSessionRounds) UnmarshalJSON(s []byte) error {
 	return gs.Scan(string(s))
 }
