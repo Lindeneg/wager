@@ -84,8 +84,7 @@ Game In Progress
     </div>
 </div>
 
-<div id="active-game" class="flex-col align-center gap-1{{if .IsSessionOver}} hidden{{end}}"
-    {{if .ActiveGameSession}}data-rounds="{{str .ActiveGameSession.Rounds}}"{{end}}>
+<div id="active-game" class="flex-col align-center gap-1{{if .IsSessionOver}} hidden{{end}}">
     <div id="active-game-actions" class="{{hidden (or .StartGame .EndRound) "mtop-1"}}">
         {{template "button" (args "new-round" "NEW ROUND"
             (not .NewRound) nil "primary")}}
@@ -145,7 +144,7 @@ Game In Progress
 <div>
 <div id="result-wrapper" class="flex-col align-center mbot-5">
 {{template "table" (args .Cols .Rows .Limit .Offset .CurrentPage
-    .MaxPage .SizeConfig .Count 1 .ActiveGameSession) }}
+    .MaxPage .SizeConfig .Count 1 1 .ActiveGameSession) }}
 </div>
 </div>
 

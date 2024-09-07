@@ -33,6 +33,7 @@ func (c Controller) SignupPage(w http.ResponseWriter, r *http.Request) {
 
 type commonProps struct {
 	Title       string
+	SharedJS    string
 	Results     []templates.ResultBox
 	Cols        []string
 	Rows        []templates.SessionRow
@@ -47,12 +48,14 @@ type commonProps struct {
 var sizeConfig = []int{10, 20, 50, 100}
 
 func newCommonProps(
-	c []string, r result.ResultMap, p *pagination.P, u []services.User, count int,
+	c []string, r result.ResultMap, p *pagination.P,
+	u []services.User, count int, js string,
 ) commonProps {
 	l := float64(p.Limit)
 	o := float64(p.Offset)
 	return commonProps{
 		Title:       "Bankmanden",
+		SharedJS:    js,
 		Results:     templates.NewResultBoxes(r, u),
 		Cols:        c,
 		MaxPage:     int(math.Max((math.Ceil((float64(count)+l)/l) - 1), 1)),
@@ -86,7 +89,7 @@ func (c Controller) HomePage(w http.ResponseWriter, r *http.Request) {
 		utils.RenderErrSlim(w, r, err)
 		return
 	}
-	props := newCommonProps(templates.SessionCols, rs, p, usrs, count)
+	props := newCommonProps(templates.SessionCols, rs, p, usrs, count, c.e.SharedJS)
 	props.Title += " Sessions"
 	props.Rows = templates.NewSessionRows(s, usrs)
 	c.t.home.Execute(w, r, props)
@@ -163,7 +166,9 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	props := sessionProps{
-		commonProps:       newCommonProps(templates.GameSessionCols, ss.Result, p, usrs, count),
+		commonProps: newCommonProps(
+			templates.GameSessionCols, ss.Result,
+			p, usrs, count, c.e.SharedJS),
 		ID:                ss.ID,
 		Games:             games,
 		Users:             usrs,

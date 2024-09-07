@@ -6,7 +6,7 @@
         <title>{{.Title}}</title>
         <link rel="stylesheet" href="/public/css/pure.css" />
         <link rel="stylesheet" href="/public/css/common.css" />
-        <script src="https://freelance.lindeneg.org/js/shared/common.js"></script>
+        <script src="{{.SharedJS}}"></script>
         <script src="/public/js/{{block "script" .}}{{end}}" type="module"></script>
     </head>
     <body>
@@ -76,7 +76,8 @@
 {{$sizeConfig := index . 6}}
 {{$count := index . 7}}
 {{$withResult := index . 8}}
-{{$withHighlight := index . 9}}
+{{$withRounds := index . 9}}
+{{$withHighlight := index . 10}}
 <div>
     {{if eq $count 0}}
     <h1 class="underline">No Sessions</h1>
@@ -116,6 +117,7 @@
     {{range $i, $row := $rows}}
     <tr
         {{if $withResult}}data-result={{index $row "result"}} {{end}}
+        {{if $withRounds}}data-rounds={{index $row "raw-rounds"}} {{end}}
         class="clickable-row{{if $withHighlight}}{{if eq $i 0}} selected-row{{end}}{{end}}">
         {{range $col := $cols}}
         <td data-name="{{$col}}">{{index $row $col}}</td>

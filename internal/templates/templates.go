@@ -50,13 +50,14 @@ func NewSessionRows(sessions []services.SessionWithGames, usrs []services.User) 
 func NewGameSessionRows(sessions []services.GameSession, games []services.Game) []SessionRow {
 	return newRows(sessions, func(s services.GameSession) SessionRow {
 		return SessionRow{
-			"id":       s.ID,
-			"game":     getNameFromID(s.GameID, games),
-			"rounds":   len(s.Rounds),
-			"started":  s.Started,
-			"result":   s.Result,
-			"ended":    s.Ended,
-			"duration": 0,
+			"id":         s.ID,
+			"game":       getNameFromID(s.GameID, games),
+			"rounds":     len(s.Rounds),
+			"raw-rounds": s.Rounds.String(),
+			"started":    s.Started,
+			"result":     s.Result,
+			"ended":      s.Ended,
+			"duration":   0,
 		}
 	})
 }
