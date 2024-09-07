@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [[ $1 == "prod" ]] then
+    source ./.prod.env
+else
+    source ./.env
+fi
+
+if [[ $SHARED_JS == "" ]] then
+    echo 'SHARED_JS' is not set in environment
+    exit 1
+fi
+
+URL=$(dirname "$SHARED_JS")/globals.d.ts
+
+curl -s "$URL" > ./cmd/wager/public/js/globals.d.ts
+
