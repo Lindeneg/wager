@@ -30,12 +30,14 @@ test-e2e:
 
 test: test-unit test-e2e
 
-
 build-seed:
 	go build -o ./bin/seed ./cmd/seed
 
 seed-clean: build-seed
 	./bin/seed dev none closed
+
+seed-clean-prod: build-seed
+	./bin/seed prod none closed
 
 seed1: build-seed
 	./bin/seed dev fixed open
