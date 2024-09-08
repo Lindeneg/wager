@@ -2,6 +2,12 @@ const { durationInMins } = window.clCommon;
 
 const IN_PROGRESS_VALS = [null, "<nil>", "In Progress"];
 
+/**
+ * @param {unknown} v
+ * @returns {boolean} */
+export const inProgress = (v) => IN_PROGRESS_VALS.includes(v);
+
+/** @type {import("./globals").TableConfig} */
 export const tableProps = {
     id: "session-table",
     defaultLimit: 10,
@@ -10,18 +16,19 @@ export const tableProps = {
         switch (col) {
             case "started":
             case "ended":
-                if (IN_PROGRESS_VALS.includes(val)) {
+                if (inProgress(val)) {
                     row.setActive();
                     return "In Progress";
                 }
                 return new Date(val).toLocaleString();
             case "duration":
-                if (IN_PROGRESS_VALS.includes(data["ended"])) {
+                if (inProgress(data["ended"])) {
                     return "-";
                 }
                 return durationInMins(data["started"], data["ended"]);
             case "rounds":
-                return val.length;
+                if (Array.isArray(val)) return val.length;
+                return val;
             default:
                 return val;
         }
