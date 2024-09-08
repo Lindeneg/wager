@@ -59,11 +59,13 @@ Game In Progress
         <div class="flex-row justify-center align-center gap-3">
             {{template "button" (args "prev-round" "PREV"
                 (not .PrevRound) nil "dim")}}
-            <b id="round-count">
+            <b id="round-count"
                 {{if .ActiveRound}}
-                Round: {{.ActiveRound.Round}}
+                data-idx="0">
+                Round: {{.ActiveRound.Round}}*
                 {{else}}
-                Result
+                data-idx="-1">
+                Total{{if .ActiveGameSession}}*{{end}}
                 {{end}}
             </b>
             {{template "button" (args "next-round" "NEXT"
@@ -93,13 +95,13 @@ Game In Progress
         {{template "button" (args "cancel-game" "CANCEL GAME"
             (not .CancelGame) nil "warning")}}
     </div>
-    <div class="flex-col w-100 align-center gap-1 pure-form">
+    <div id="game-config" class="flex-col w-100 align-center gap-1 pure-form">
         <div class="flex-row gap-1">
             <div class="flex-col">
                 <label>Select Game</label>
                 <select id="game-select"
                     {{$activeGame := .ActiveGameSession}}
-                    {{if $activeGame}}disabled{{end}}
+                    {{if or $activeGame .IsSessionOver}}disabled{{end}}
                     class="pure-select">
                     {{range $value := .Games}}
                     <option
@@ -117,7 +119,7 @@ Game In Progress
                     id="wager-input"
                     class="pure-input small"
                     value="{{.Wager}}"
-                    {{if gt .Wager 0}}disabled{{end}}
+                    {{if or .ActiveRound .IsSessionOver}}disabled{{end}}
                 />
             </div>
         </div>
