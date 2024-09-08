@@ -1,17 +1,25 @@
 #!/usr/bin/env bash
 
-if [[ $1 == "prod" ]] then
+if [[ "$1" == "prod" ]] then
     source ./.prod.env
 else
     source ./.env
 fi
 
-if [[ $SHARED_JS == "" ]] then
+if [[ "$SHARED_JS" == "" ]] then
     echo 'SHARED_JS' is not set in environment
     exit 1
 fi
 
+OUT=./cmd/wager/public/js/globals.d.ts
 URL=$(dirname "$SHARED_JS")/globals.d.ts
 
-curl -s "$URL" > ./cmd/wager/public/js/globals.d.ts
+if curl -sS -I -X HEAD "$URL" | grep "200 OK" > /dev/null; then
+    curl -sS -o "$OUT" "$URL" > "$OUT"
+    echo declarations dumped to "$OUT"
+    exit 0
+fi
+
+echo failed to get declarations from "$URL"
+exit 1
 
