@@ -6,7 +6,7 @@
         <title>{{.Title}}</title>
         <link rel="stylesheet" href="/public/css/pure.css" />
         <link rel="stylesheet" href="/public/css/common.css" />
-        <script src="https://freelance.lindeneg.org/js/shared/common.js"></script>
+        <script src="{{.SharedJS}}"></script>
         <script src="/public/js/{{block "script" .}}{{end}}" type="module"></script>
     </head>
     <body>
@@ -42,9 +42,8 @@
 {{$color := index . 3}}
 {{$total := index . 4}}
 {{$obj := index . 5}}
-    <p id="{{$name}}-result-{{$opt1}}-p"> {{$name}} {{$opt1}}
+    <p> {{$name}} {{$opt1}}
     <b
-        id="{{$name}}-result-{{$opt1}}-val"
         class="underline"
         {{if gt $total 0}}
             style="color:{{$color}}">
@@ -57,10 +56,10 @@
     </p>
     {{$length := len $obj}}
     {{if gt $length 0}}
-    <ul id="{{$name}}-result-{{$opt1}}-ul">
+    <ul>
         {{range $k, $v := $obj}}
-        <li id="{{$name}}-result-{{$k}}-li">
-            <i><span id="{{$name}}-result-{{$k}}-val">{{$v}}</span> {{$opt2}} {{$k}}</i>
+        <li>
+            <i><span>{{$v}}</span> {{$opt2}} {{$k}}</i>
         </li>
         {{end}}
     </ul>
@@ -77,7 +76,8 @@
 {{$sizeConfig := index . 6}}
 {{$count := index . 7}}
 {{$withResult := index . 8}}
-{{$withHighlight := index . 9}}
+{{$withRounds := index . 9}}
+{{$withHighlight := index . 10}}
 <div>
     {{if eq $count 0}}
     <h1 class="underline">No Sessions</h1>
@@ -117,6 +117,7 @@
     {{range $i, $row := $rows}}
     <tr
         {{if $withResult}}data-result={{index $row "result"}} {{end}}
+        {{if $withRounds}}data-rounds={{index $row "raw-rounds"}} {{end}}
         class="clickable-row{{if $withHighlight}}{{if eq $i 0}} selected-row{{end}}{{end}}">
         {{range $col := $cols}}
         <td data-name="{{$col}}">{{index $row $col}}</td>

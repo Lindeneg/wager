@@ -1,6 +1,8 @@
-DROP TABLE IF EXISTS session;
-DROP TABLE IF EXISTS session_participant;
+DROP TABLE IF EXISTS game_session_round;
 DROP TABLE IF EXISTS game_session;
+DROP TABLE IF EXISTS session_participant;
+DROP TABLE IF EXISTS session;
+DROP TABLE IF EXISTS event;
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS game;
-DROP TABLE IF EXISTS event;
+DROP TABLE IF EXISTS result;

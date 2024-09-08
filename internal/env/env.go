@@ -19,6 +19,7 @@ const (
 
 type Env struct {
 	Port             int
+	SharedJS         string
 	ConnectionString string
 	InviteCode       string
 	JWTSecret        string
@@ -37,12 +38,18 @@ func envFileFromMode(m Mode) string {
 	}
 }
 
-func intOrDefault(s string, d int) int {
-	v, err := strconv.Atoi(os.Getenv(s))
-	if err != nil {
-		return d
+func strOrDefault(s string, d string) string {
+	if e := os.Getenv(s); e != "" {
+		return e
 	}
-	return v
+	return d
+}
+
+func intOrDefault(s string, d int) int {
+	if v, err := strconv.Atoi(os.Getenv(s)); err == nil {
+		return v
+	}
+	return d
 }
 
 func requiredValue(s string) string {
@@ -54,11 +61,10 @@ func requiredValue(s string) string {
 }
 
 func optionalValue(s string, d string) string {
-	e := os.Getenv(s)
-	if e == "" {
-		return d
+	if e := os.Getenv(s); e != "" {
+		return e
 	}
-	return e
+	return d
 }
 
 func New() Env {
@@ -76,6 +82,7 @@ func New() Env {
 	}
 	return Env{
 		Port:             intOrDefault("PORT", 5000),
+		SharedJS:         requiredValue("SHARED_JS"),
 		ConnectionString: requiredValue("CONNECTION_STRING"),
 		InviteCode:       requiredValue("INVITE_CODE"),
 		JWTSecret:        requiredValue("JWT_SECRET"),

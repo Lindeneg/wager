@@ -162,6 +162,11 @@ hr {
     color: #eee;
 }
 
+.pure-button.dim {
+    background: #333;
+    color: rgba(225, 214, 214, 0.8);
+}
+
 .spinner {
     color: #ff0303;
 }

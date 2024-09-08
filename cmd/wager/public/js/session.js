@@ -1,176 +1,148 @@
-import { tableProps } from "./shared.js";
+import { tableProps, inProgress } from "./shared.js";
 
 const c = window.clEl;
 const http = window.clHttp;
 const {
-    disableBtn,
-    disableEl,
+    trim,
     enableBtn,
-    enableEl,
+    disableBtn,
     enableElIf,
     hideEl,
     showEl,
+    showElIf,
     getNameFromId,
     strToIntId,
     tempDisable,
 } = window.clCommon;
 
-const STATE = {
+const STATE_KIND = {
     SESSION_ENDED: "Session Has Ended",
     GAME_INACTIVE: "No Active Game",
     ROUND_IN_PROGRESS: "Round In Progress",
     GAME_IN_PROGRESS: "Game In Progress",
+    SELECTED_GAME: "Selected Game",
+};
+
+const ROUND_KIND = {
+    NEXT: -1,
+    TOTAL: 0,
+    PREV: 1,
 };
 
 const sessionId = Number(window.location.pathname.split("/").pop());
 
-const users = Array.from(
-    document.querySelectorAll("#who-won-container div")
-).map((e) => ({
-    id: strToIntId(e.id),
-    name: e.innerText.replaceAll("\n", "").trim(),
-}));
-
-const gameName = Array.from(
-    document.querySelectorAll("#game-select option")
-).reduce((acc, cur) => {
-    acc[cur.value] = cur.innerText;
-    return acc;
-}, {});
-
-const sessionTitle = document.getElementById("session-title");
+const stateEl = document.getElementById("initial-state");
+const activeResultWrapperEl = document.getElementById("active-result-wrapper");
+const activeGameEl = document.getElementById("active-game");
+const activeResultEl = document.getElementById("active-result");
+const activeResultTitleEl = document.getElementById("active-result-title");
+const activeGameConfig = document.getElementById("game-config");
+const startGameBtn = document.getElementById("start-game");
+const endGameBtn = document.getElementById("end-game");
+const cancelGameBtn = document.getElementById("cancel-game");
 const endSessionBtn = document.getElementById("end-session");
 const cancelSessionBtn = document.getElementById("cancel-session");
 const newRoundBtn = document.getElementById("new-round");
 const endRoundBtn = document.getElementById("end-game-round");
-const startGameWrapper = document.getElementById("start-game-wrapper");
-const startGameBtn = document.getElementById("start-game");
-const endGameBtn = document.getElementById("end-game");
-const cancelGameBtn = document.getElementById("cancel-game");
-const sessionResult = document.getElementById("session-result");
-const selectedWrapper = document.getElementById("selected-wrapper");
-const selectedResult = document.getElementById("selected-result");
-const selectedTitle = document.getElementById("selected-session-title");
-const gameSelect = document.getElementById("game-select");
-const wagerInput = document.getElementById("wager-input");
-const whoWonWrapper = document.getElementById("who-won");
 const whoWonBtns = Array.from(document.querySelectorAll(".who-won-btn"));
-const activeGameEl = document.getElementById("active-game");
-const activeGameActions = document.getElementById("active-game-actions");
+const whoWonEl = document.getElementById("who-won");
+const prevRoundBtn = document.getElementById("prev-round");
 const roundCountEl = document.getElementById("round-count");
+const nextRoundBtn = document.getElementById("next-round");
+const activeGameActionsWrapper = document.getElementById("active-game-actions");
+const gameSelectEl = document.getElementById("game-select");
+const wagerInputEl = document.getElementById("wager-input");
 
-const ctx = window.clTable.initialize({
-    ...tableProps,
-    onRender: (_, entry, row) => {
-        if (entry.result) {
-            row.el.dataset.result = JSON.stringify(entry.result);
-        }
-    },
-    onInitialize: (_, row) => {
-        const data = row.data(null, "result");
-        return data ? { result: JSON.parse(data) } : {};
-    },
-    onClick: (row) => {
-        ctx.table.highlight(row);
-        renderSelectedResult();
-    },
-    onFetch: async (search) => {
-        const disabled = tempDisable(ctx.nextBtn, ctx.prevBtn);
-        const { data } = await http.getJson(
-            `/game-session/${sessionId}?${search}`
-        );
-        disabled.revert();
-        return data.map((e) => ({
-            ...e,
-            game: gameName[e.gameId],
-        }));
-    },
-});
+/** @returns {number} */
+const winnerId = () => {
+    const btn = whoWonBtns.find((e) => e.classList.contains("success"));
+    if (!btn) return -1;
+    return strToIntId(btn.id);
+};
 
 /**
+ * @param {number} round
+ * @param {boolean} active
+ * @returns {string} */
+const createRouteTitle = (round, active) => {
+    const s = round < 0 ? "Total" : "Round: " + round;
+    return active ? s + "*" : s;
+};
+
+/** @returns {string} */
+const currentState = () => trim(stateEl.innerText);
+
+const state = {
+    sessionId: Number(window.location.pathname.split("/").pop()),
+    users: Array.from(document.querySelectorAll("#who-won-container div")).map(
+        (e) => ({
+            id: strToIntId(e.id),
+            name: e.innerText.replaceAll("\n", "").trim(),
+        })
+    ),
+    current: currentState,
+    /**
+     * @param {string} s
+     * @returns {boolean} */
+    is: (s) => currentState() === s,
+    ...Array.from(document.querySelectorAll("#game-select option")).reduce(
+        (acc, cur) => {
+            acc.gameName[cur.value] = cur.innerText;
+            acc.gameId[cur.innerText] = cur.value;
+            return acc;
+        },
+        { gameName: {}, gameId: {} }
+    ),
+};
+
+/**
+ * @param {HTMLElement} parent
  * @param {number | string} userId
- * @param {Record<string, any>} resultData
- * @param {Record<string, any>[]} users
- * @returns {HTMLDivElement} */
-const resultBox = (userId, resultData) => {
-    const owesObj = resultData[userId];
-    const totalOwe = Object.values(owesObj).reduce((acc, cur) => acc + cur, 0);
-    const totalOwed = Object.entries(resultData).reduce((acc, [key, value]) => {
-        if (key === userId || !value[userId]) return acc;
-        return acc + value[userId];
-    }, 0);
-
-    const wrapper = c.append(
-        c.div({}, "box"),
-        c.append(
-            c.any("p", {
-                innerText: getNameFromId(Number(userId), users) + " wins ",
-            }),
-            c.any(
-                "b",
-                {
-                    innerText: totalOwed ? totalOwed : "nothing",
-                    style: totalOwed ? "color:#067106" : "",
-                },
-                ["underline"]
-            )
-        )
-    );
-
-    if (totalOwed) {
-        c.append(
-            wrapper,
-            c.append(
-                c.any("ul"),
-                ...Object.entries(resultData).map(([key, value]) => {
-                    if (key === userId || value[userId] === 0) return null;
-                    const owed = value[userId];
-                    return c.append(
-                        c.any("li"),
-                        c.any("i", {
-                            innerText: `${owed} from ${getNameFromId(
-                                Number(key),
-                                users
-                            )}`,
-                        })
-                    );
-                })
-            )
-        );
-    }
-
-    c.append(
-        wrapper,
-        c.append(
-            c.any("p", {
-                innerText: getNameFromId(Number(userId), users) + " owes ",
-            }),
-            c.any(
-                "b",
-                {
-                    innerText: totalOwe ? totalOwe : "nothing",
-                    style: totalOwe ? "color:rgb(193, 27, 27)" : "",
-                },
-                ["underline"]
-            )
-        )
-    );
-
-    if (!totalOwe) return wrapper;
-
+ * @param {number} amount
+ * @param {string} text
+ * @param {string} color
+ * @returns {HTMLElement} */
+const appendResultText = (parent, userId, amount, text, color) => {
     return c.append(
-        wrapper,
+        parent,
+        c.append(
+            c.any("p", {
+                innerText:
+                    getNameFromId(Number(userId), state.users) + ` ${text} `,
+            }),
+            c.any(
+                "b",
+                {
+                    innerText: amount ? amount : "nothing",
+                    style: amount ? color : "",
+                },
+                ["underline"]
+            )
+        )
+    );
+};
+
+/**
+ * @param {HTMLElement} parent
+ * @param {Record<string, any>} data
+ * @param {(key: string, value: unknown) => boolean} cond
+ * @param {(key: string, value: unknown) => unknown} getValue
+ * @param {string} text
+ * @returns {HTMLElement} */
+const appendResultList = (parent, data, cond, getValue, text) => {
+    return c.append(
+        parent,
         c.append(
             c.any("ul"),
-            ...Object.entries(owesObj).map(([key, value]) => {
-                if (value === 0) return null;
+            ...Object.entries(data).map(([key, value]) => {
+                if (cond(key, value)) return null;
                 return c.append(
                     c.any("li"),
                     c.any("i", {
-                        innerText: `${value} to ${getNameFromId(
-                            Number(key),
-                            users
-                        )}`,
+                        innerText: `${getValue(
+                            key,
+                            value
+                        )} ${text} ${getNameFromId(Number(key), state.users)}`,
                     })
                 );
             })
@@ -179,121 +151,170 @@ const resultBox = (userId, resultData) => {
 };
 
 /**
- * @param {Object} result
- * @returns {bool} */
-export const hasResolvedResult = (result) => {
-    return (
-        Object.values(result).reduce((acc, cur) => {
-            return acc + Object.values(cur).reduce((a, c) => a + c, 0);
-        }, 0) > 0
+ * @param {number | string} userId
+ * @param {Record<string, any>} resultData
+ * @returns {HTMLDivElement} */
+const resultBox = (userId, resultData) => {
+    const owesObj = resultData[userId];
+    const totalOwe = Object.values(owesObj).reduce((acc, cur) => acc + cur, 0);
+    const totalOwed = Object.entries(resultData).reduce((acc, [key, value]) => {
+        if (key === userId || !value[userId]) return acc;
+        return acc + value[userId];
+    }, 0);
+    const wrapper = appendResultText(
+        c.div({}, "box"),
+        userId,
+        totalOwed,
+        "wins",
+        "color:#067106"
+    );
+    if (totalOwed) {
+        appendResultList(
+            wrapper,
+            resultData,
+            (key, value) => key === userId || value[userId] === 0,
+            (_, value) => value[userId],
+            "from"
+        );
+    }
+    appendResultText(
+        wrapper,
+        userId,
+        totalOwe,
+        "owes",
+        "color:rgb(193, 27, 27)"
+    );
+    if (!totalOwe) return wrapper;
+    return appendResultList(
+        wrapper,
+        owesObj,
+        (_, value) => value === 0,
+        (_, value) => value,
+        "to"
     );
 };
 
-const winnerId = () => {
-    const btn = whoWonBtns.find((e) => e.classList.contains("success"));
-    if (!btn) return -1;
-    return strToIntId(btn.id);
-};
+/** @param {number} kind */
+const renderSelectedResult = (kind) => {
+    let isActive = false;
+    let selected = ctx.table.selected();
+    if (!selected) {
+        const active = ctx.table.active();
+        if (!active) {
+            if (state.is(STATE_KIND.GAME_INACTIVE)) {
+                showEl(startGameBtn, activeGameConfig);
+                enableBtn(gameSelectEl, wagerInputEl);
+            }
+            return hideEl(activeResultWrapperEl);
+        }
+        selected = active;
+        isActive = true;
+    }
+    const currentIdx = Number(roundCountEl.dataset.idx);
+    const rounds = selected.state().rounds;
 
-const isState = (s) => sessionTitle.innerText === s;
+    const getRoundResult = () => {
+        if (kind === ROUND_KIND.NEXT && currentIdx === 0) {
+            return [selected.state().result, -1];
+        }
+        let idx = 0;
+        if (currentIdx > -1) {
+            idx = currentIdx + kind;
+        }
+        return [rounds[idx].result, idx];
+    };
 
-const setState = (s) => {
-    const active = ctx.table.active();
-    switch (s) {
-        case STATE.SESSION_ENDED:
-            hideEl(activeGameEl);
-            disableBtn(endSessionBtn, cancelSessionBtn);
-            showEl(sessionResult, sessionTitle);
+    showEl(activeResultWrapperEl, activeGameEl);
+    activeResultTitleEl.innerHTML = `Game Session #${selected.val("id")}`;
+    activeResultEl.innerHTML = "";
+
+    let result, idx;
+    switch (kind) {
+        case ROUND_KIND.TOTAL:
+            [result, idx] = [selected.state().result, -1];
             break;
-        case STATE.GAME_INACTIVE:
-            hideEl(
-                sessionResult,
-                whoWonWrapper,
-                startGameWrapper,
-                activeGameActions,
-                roundCountEl
-            );
-            enableBtn(startGameBtn);
-            enableEl(wagerInput, gameSelect);
-            showEl(activeGameEl, startGameWrapper);
-            enableElIf(!active, endSessionBtn);
-            enableElIf(!ctx.hasData(), cancelSessionBtn);
-            break;
-        case STATE.GAME_IN_PROGRESS:
-            disableBtn(
-                endSessionBtn,
-                cancelSessionBtn,
-                cancelGameBtn,
-                endRoundBtn
-            );
-            disableEl(gameSelect);
-            enableEl(wagerInput);
-            enableBtn(newRoundBtn, endGameBtn);
-            hideEl(whoWonWrapper, startGameWrapper);
-            showEl(
-                sessionResult,
-                activeGameEl,
-                activeGameActions,
-                roundCountEl
-            );
-            break;
-        case STATE.ROUND_IN_PROGRESS:
-            disableBtn(
-                endSessionBtn,
-                cancelSessionBtn,
-                newRoundBtn,
-                endGameBtn,
-                endRoundBtn
-            );
-            disableEl(gameSelect, wagerInput);
-            enableElIf(
-                !hasResolvedResult(active.state().result),
-                cancelGameBtn
-            );
-            hideEl(startGameWrapper);
-            showEl(
-                whoWonWrapper,
-                activeGameEl,
-                activeGameActions,
-                roundCountEl
-            );
+        case ROUND_KIND.PREV:
+        case ROUND_KIND.NEXT:
+            [result, idx] = getRoundResult();
             break;
         default:
-            console.error("Unknown state:", s);
-            return;
+            console.error("Unknown ROUND_KIND:", kind);
+            break;
     }
-    if (active) {
-        roundCountEl.innerText = "Round: " + active.state().rounds;
-    }
-    sessionTitle.innerText = s;
-};
 
-const renderSelectedResult = () => {
-    const selected = ctx.table.selected();
-    if (!selected) return hideEl(selectedWrapper);
-    showEl(selectedWrapper, selectedResult, selectedTitle);
-    selectedTitle.innerHTML = `#${selected.val(
-        "id"
-    )} <span class="cap">${selected.val("game")}</span> Result`;
-    selectedResult.innerHTML = "";
-    const result = selected.state().result;
+    if (!result) return hideEl(activeResultWrapperEl);
+
+    const isTotal = idx < 0;
+
+    const isActiveRound = isTotal
+        ? inProgress(selected.state().ended)
+        : !!rounds[idx].active;
+
+    roundCountEl.innerText = createRouteTitle(
+        isTotal ? -1 : rounds[idx].round,
+        isActiveRound
+    );
+    roundCountEl.dataset.idx = idx;
+
+    enableElIf(idx < rounds.length - 1, prevRoundBtn);
+    enableElIf(!isTotal, nextRoundBtn);
+
+    enableElIf(
+        isTotal && isActive && !newRoundBtn.hasAttribute("disabled"),
+        wagerInputEl
+    );
+    disableBtn(gameSelectEl);
+
+    showElIf(isActive && isTotal, activeGameActionsWrapper);
+    showElIf(
+        !isTotal || state.is(STATE_KIND.GAME_IN_PROGRESS),
+        activeGameConfig
+    );
+    showElIf(isActiveRound && !isTotal, whoWonEl);
+    hideEl(startGameBtn);
+
+    gameSelectEl.value = state.gameId[selected.state().game];
+    wagerInputEl.value = isTotal ? 0 : rounds[idx].wager;
+
     Object.keys(result).forEach((key) => {
-        selectedResult.appendChild(resultBox(key, result));
+        activeResultEl.appendChild(resultBox(key, result));
     });
 };
 
-const renderSessionResult = (result) => {
-    if (!result) {
-        const active = ctx.table.active();
-        if (!active) return hideEl(sessionResult);
-        showEl(sessionResult);
-        result = active.state().result;
-    }
-    sessionResult.innerHTML = "";
-    Object.keys(result).forEach((key) => {
-        sessionResult.appendChild(resultBox(key, result));
-    });
-};
+const ctx = window.clTable.initialize({
+    ...tableProps,
+    onRender: (_, entry, row) => {
+        if (entry.result) {
+            row.el.dataset.result = JSON.stringify(entry.result);
+        }
+        if (entry.rounds && Array.isArray(entry.rounds)) {
+            row.el.dataset.rounds = JSON.stringify(entry.rounds);
+        }
+    },
+    onInitialize: (_, row) => {
+        const data = {};
+        const result = row.data(null, "result");
+        if (result) data.result = JSON.parse(result);
+        const rounds = row.data(null, "rounds");
+        if (rounds) data.rounds = JSON.parse(rounds);
+        return data;
+    },
+    onClick: (row) => {
+        ctx.table.highlight(row);
+        renderSelectedResult(ROUND_KIND.TOTAL);
+    },
+    onFetch: async (search) => {
+        const disabled = tempDisable(ctx.nextBtn, ctx.prevBtn);
+        const { data } = await http.getJson(
+            `/game-session/${state.sessionId}?${search}`
+        );
+        disabled.revert();
+        return data.map((e) => ({
+            ...e,
+            game: state.gameName[e.gameId],
+        }));
+    },
+});
 
 [ctx.nextBtn, ctx.prevBtn].forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -303,8 +324,15 @@ const renderSessionResult = (result) => {
         } else {
             ctx.table.removeHighlight();
         }
-        hideEl(selectedWrapper);
     });
+});
+
+prevRoundBtn.addEventListener("click", () => {
+    renderSelectedResult(ROUND_KIND.PREV);
+});
+
+nextRoundBtn.addEventListener("click", () => {
+    renderSelectedResult(ROUND_KIND.NEXT);
 });
 
 whoWonBtns.forEach((btn) => {
@@ -316,31 +344,18 @@ whoWonBtns.forEach((btn) => {
 });
 
 startGameBtn.addEventListener("click", async () => {
-    if (!isState(STATE.GAME_INACTIVE)) return;
-    const { data, err } = await http.postJson("/game-session", {
+    if (!state.is(STATE_KIND.GAME_INACTIVE)) return;
+    const { err } = await http.postJson("/game-session", {
         sessionId,
-        gameId: Number(gameSelect.value),
-        wager: Number(wagerInput.value),
+        gameId: Number(gameSelectEl.value),
+        wager: Number(wagerInputEl.value),
     });
     if (err) return;
-    data.game = gameName[data.gameId];
-    const pageData = ctx.state.data[1];
-    const limit = ctx.getLimit();
-    if (pageData.length >= limit) {
-        pageData.pop();
-    }
-    pageData.unshift(data);
-    ctx.state.data = {
-        1: pageData,
-    };
-    ctx.renderCurrentPage();
-    ctx.table.highlight(ctx.table.active());
-    renderSessionResult();
-    setState(STATE.ROUND_IN_PROGRESS);
+    window.location.reload();
 });
 
 endGameBtn.addEventListener("click", async () => {
-    if (!isState(STATE.GAME_IN_PROGRESS)) return;
+    if (!state.is(STATE_KIND.GAME_IN_PROGRESS)) return;
     const active = ctx.table.active();
     if (!active) return;
     const { err } = await http.postJson(
@@ -351,7 +366,7 @@ endGameBtn.addEventListener("click", async () => {
 });
 
 cancelGameBtn.addEventListener("click", async () => {
-    if (!isState(STATE.ROUND_IN_PROGRESS)) return;
+    if (!state.is(STATE_KIND.ROUND_IN_PROGRESS)) return;
     const active = ctx.table.active();
     if (!active) return;
     const { err } = await http.delete(`/game-session/${active.state().id}`);
@@ -360,48 +375,40 @@ cancelGameBtn.addEventListener("click", async () => {
 });
 
 newRoundBtn.addEventListener("click", async () => {
-    if (!isState(STATE.GAME_IN_PROGRESS)) return;
+    if (!state.is(STATE_KIND.GAME_IN_PROGRESS)) return;
     const active = ctx.table.active();
     if (!active) return;
     const id = active.state().id;
     const { err } = await http.postJson(`/game-session/${id}/new-round`, {
         id,
-        wager: Number(wagerInput.value),
+        wager: Number(wagerInputEl.value),
     });
     if (err) return;
-    const newRounds = Number(active.val("rounds")) + 1;
-    active.state().rounds = newRounds;
-    active.col("rounds").innerText = newRounds;
-    roundCountEl.innerText = "Round: " + newRounds;
-    setState(STATE.ROUND_IN_PROGRESS);
+    window.location.reload();
 });
 
 endRoundBtn.addEventListener("click", async () => {
-    if (!isState(STATE.ROUND_IN_PROGRESS)) return;
+    if (!state.is(STATE_KIND.ROUND_IN_PROGRESS)) return;
     const active = ctx.table.active();
     if (!active) return;
     const id = active.state().id;
-    const { err, data } = await http.postJson(`/game-session/${id}/end-round`, {
+    const { err } = await http.postJson(`/game-session/${id}/end-round`, {
         id,
         winnerId: winnerId(),
     });
     if (err) return;
-    active.state().result = data.result;
-    whoWonBtns.forEach((e) => e.classList.remove("success"));
-    renderSessionResult();
-    setState(STATE.GAME_IN_PROGRESS);
+    window.location.reload();
 });
 
 endSessionBtn.addEventListener("click", async () => {
-    if (!isState(STATE.GAME_INACTIVE)) return;
-    const { err, data } = await http.postJson(`/session/${sessionId}/end`);
+    if (!state.is(STATE_KIND.GAME_INACTIVE)) return;
+    const { err } = await http.postJson(`/session/${sessionId}/end`);
     if (err) return;
-    renderSessionResult(data.result);
-    setState(STATE.SESSION_ENDED);
+    window.location.reload();
 });
 
 cancelSessionBtn.addEventListener("click", async () => {
-    if (!isState(STATE.GAME_INACTIVE) || ctx.hasData()) return;
+    if (!state.is(STATE_KIND.GAME_INACTIVE) || ctx.hasData()) return;
     const { err } = await http.delete(`/session/${sessionId}`);
     if (err) return;
     window.location.assign("/");

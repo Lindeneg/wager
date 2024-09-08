@@ -36,7 +36,7 @@ var games = []string{
 	"Rocket League",
 }
 
-var wagers = []int{50, 100, 150, 200, 300, 400, 800, 1150}
+var wagers = []int{50, 100, 150, 200, 300}
 
 func main() {
 	if len(os.Args) < 4 {
@@ -58,8 +58,14 @@ func main() {
 
 	srv := services.InitServices(s)
 
-	s.RunFile("drop")
-	s.RunFile("schema")
+	err = s.RunFile("drop")
+	if err != nil {
+		log.Fatal("DROP", err)
+	}
+	err = s.RunFile("schema")
+	if err != nil {
+		log.Fatal("SCHEMA", err)
+	}
 
 	if seedMode == "none" {
 		return
@@ -75,20 +81,35 @@ func main() {
 
 	var sessions []seedSession
 	if seedMode == "fixed" {
-		sessions = fixedSessions(srv)
+		sessions = fixedSessions(srv, open)
 	} else {
 		sessions = randomSessions(srv, 53)
 	}
 
 	for i, ss := range sessions {
-		sn, _ := srv.Session.Create(ss.users)
-		for _, gs := range ss.gameSessions {
-			gsn, _ := srv.GSession.Create(sn.ID, gs.gameID, gs.wager)
-			gs.after(gsn.ID)
-			srv.GSession.End(gsn.ID)
+		ls := i < len(sessions)-1
+		sn, err := srv.Session.Create(ss.users)
+		if err != nil {
+			log.Fatal("CREATE", err)
 		}
-		if !open || i < len(sessions)-1 {
-			srv.Session.End(sn.ID)
+		for ii, gs := range ss.gameSessions {
+			gsn, err := srv.GSession.Create(sn.ID, gs.gameID, gs.wager)
+			if err != nil {
+				log.Fatal("GCREATE", err)
+			}
+			gs.after(gsn.ID)
+			if !open || ls || ii < len(ss.gameSessions)-1 {
+				_, err = srv.GSession.End(gsn.ID)
+				if err != nil {
+					log.Fatal("GEND", err)
+				}
+			}
+		}
+		if !open || ls {
+			_, err := srv.Session.End(sn.ID)
+			if err != nil {
+				log.Fatal("END", err)
+			}
 		}
 	}
 }
@@ -139,10 +160,19 @@ func randomGameSessions(srv *services.Services, p []db.ID, n int) []seedGameSess
 			gameID: game(),
 			wager:  wager(),
 			after: func(id db.ID) {
-				srv.GSession.EndRound(id, winner(p))
+				_, err := srv.GSession.EndRound(id, winner(p))
+				if err != nil {
+					log.Fatal("END ROUND", err)
+				}
 				if roll() {
-					srv.GSession.NewRound(id, wager())
-					srv.GSession.EndRound(id, winner(p))
+					_, err = srv.GSession.NewRound(id, wager())
+					if err != nil {
+						log.Fatal("NEW ROUND", err)
+					}
+					_, err = srv.GSession.EndRound(id, winner(p))
+					if err != nil {
+						log.Fatal("END ROUND", err)
+					}
 				}
 			},
 		})
@@ -150,7 +180,7 @@ func randomGameSessions(srv *services.Services, p []db.ID, n int) []seedGameSess
 	return gs
 }
 
-func fixedSessions(srv *services.Services) []seedSession {
+func fixedSessions(srv *services.Services, open bool) []seedSession {
 	return []seedSession{
 		{
 			users: []db.ID{1, 2, 3},
@@ -263,6 +293,9 @@ func fixedSessions(srv *services.Services) []seedSession {
 					after: func(id db.ID) {
 						srv.GSession.EndRound(id, 1)
 						srv.GSession.NewRound(id, 800)
+						if !open {
+							srv.GSession.EndRound(id, 3)
+						}
 					},
 				},
 			},

@@ -3,6 +3,8 @@ data
 bin
 tmp
 temp
+notes
 .*env
+*.d.ts
 !.test.env
 connect

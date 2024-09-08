@@ -58,7 +58,7 @@ const newGameHandler = () => {
                 innerText: "Enter Game Name",
             }),
             c.append(c.div({}, "pure-form"), input),
-            c.append(errDiv)
+            errDiv
         ),
         onConfirm: async () => {
             if (!input.value) return true;
