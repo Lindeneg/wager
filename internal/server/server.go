@@ -42,6 +42,8 @@ func New(e env.Env, s *services.Services, p fs.FS) *Server {
 	r.Mount("/api", apiRouter(c, m))
 	r.Mount("/", viewRouter(c, m))
 
+	fmt.Printf("MODE: %q\n", e.Mode)
+
 	return &Server{r, e.Port}
 }
 

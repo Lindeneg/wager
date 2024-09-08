@@ -6,11 +6,9 @@ if [[ $PORT == "" ]] then
     PORT=5000
 fi
 
-
 POSTMAN="postman/wager-test-suite.postman_collection.json"
 URL="http://localhost:$PORT/ping"
 TIMEOUT=30
-
 
 ping_until_success() {
     echo pinging $URL

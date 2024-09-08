@@ -13,21 +13,24 @@ import (
 )
 
 type AuthProps struct {
-	Title string
-	Name  string
+	Title    string
+	SharedJS string
+	Name     string
 }
 
 func (c Controller) LoginPage(w http.ResponseWriter, r *http.Request) {
 	c.t.auth.Execute(w, r, AuthProps{
-		Title: "Bankmand Login",
-		Name:  "login",
+		Title:    "Bankmand Login",
+		SharedJS: c.e.SharedJS,
+		Name:     "login",
 	})
 }
 
 func (c Controller) SignupPage(w http.ResponseWriter, r *http.Request) {
 	c.t.auth.Execute(w, r, AuthProps{
-		Title: "Bankmand Signup",
-		Name:  "signup",
+		Title:    "Bankmand Signup",
+		SharedJS: c.e.SharedJS,
+		Name:     "signup",
 	})
 }
 

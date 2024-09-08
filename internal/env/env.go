@@ -80,7 +80,6 @@ func New() Env {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("MODE: %q\n", mode)
 	return Env{
 		Port:             intOrDefault("PORT", 5000),
 		SharedJS:         requiredValue("SHARED_JS"),

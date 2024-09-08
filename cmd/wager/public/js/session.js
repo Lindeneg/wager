@@ -5,6 +5,7 @@ const http = window.clHttp;
 const {
     trim,
     enableBtn,
+    disableBtn,
     enableElIf,
     hideEl,
     showEl,
@@ -95,6 +96,61 @@ const state = {
 };
 
 /**
+ * @param {HTMLElement} parent
+ * @param {number | string} userId
+ * @param {number} amount
+ * @param {string} text
+ * @param {string} color
+ * @returns {HTMLElement} */
+const appendResultText = (parent, userId, amount, text, color) => {
+    return c.append(
+        parent,
+        c.append(
+            c.any("p", {
+                innerText:
+                    getNameFromId(Number(userId), state.users) + ` ${text} `,
+            }),
+            c.any(
+                "b",
+                {
+                    innerText: amount ? amount : "nothing",
+                    style: amount ? color : "",
+                },
+                ["underline"]
+            )
+        )
+    );
+};
+
+/**
+ * @param {HTMLElement} parent
+ * @param {Record<string, any>} data
+ * @param {(key: string, value: unknown) => boolean} cond
+ * @param {(key: string, value: unknown) => unknown} getValue
+ * @param {string} text
+ * @returns {HTMLElement} */
+const appendResultList = (parent, data, cond, getValue, text) => {
+    return c.append(
+        parent,
+        c.append(
+            c.any("ul"),
+            ...Object.entries(data).map(([key, value]) => {
+                if (cond(key, value)) return null;
+                return c.append(
+                    c.any("li"),
+                    c.any("i", {
+                        innerText: `${getValue(
+                            key,
+                            value
+                        )} ${text} ${getNameFromId(Number(key), state.users)}`,
+                    })
+                );
+            })
+        )
+    );
+};
+
+/**
  * @param {number | string} userId
  * @param {Record<string, any>} resultData
  * @returns {HTMLDivElement} */
@@ -105,84 +161,36 @@ const resultBox = (userId, resultData) => {
         if (key === userId || !value[userId]) return acc;
         return acc + value[userId];
     }, 0);
-
-    const wrapper = c.append(
+    const wrapper = appendResultText(
         c.div({}, "box"),
-        c.append(
-            c.any("p", {
-                innerText:
-                    getNameFromId(Number(userId), state.users) + " wins ",
-            }),
-            c.any(
-                "b",
-                {
-                    innerText: totalOwed ? totalOwed : "nothing",
-                    style: totalOwed ? "color:#067106" : "",
-                },
-                ["underline"]
-            )
-        )
+        userId,
+        totalOwed,
+        "wins",
+        "color:#067106"
     );
-
     if (totalOwed) {
-        c.append(
+        appendResultList(
             wrapper,
-            c.append(
-                c.any("ul"),
-                ...Object.entries(resultData).map(([key, value]) => {
-                    if (key === userId || value[userId] === 0) return null;
-                    const owed = value[userId];
-                    return c.append(
-                        c.any("li"),
-                        c.any("i", {
-                            innerText: `${owed} from ${getNameFromId(
-                                Number(key),
-                                state.users
-                            )}`,
-                        })
-                    );
-                })
-            )
+            resultData,
+            (key, value) => key === userId || value[userId] === 0,
+            (_, value) => value[userId],
+            "from"
         );
     }
-
-    c.append(
+    appendResultText(
         wrapper,
-        c.append(
-            c.any("p", {
-                innerText:
-                    getNameFromId(Number(userId), state.users) + " owes ",
-            }),
-            c.any(
-                "b",
-                {
-                    innerText: totalOwe ? totalOwe : "nothing",
-                    style: totalOwe ? "color:rgb(193, 27, 27)" : "",
-                },
-                ["underline"]
-            )
-        )
+        userId,
+        totalOwe,
+        "owes",
+        "color:rgb(193, 27, 27)"
     );
-
     if (!totalOwe) return wrapper;
-
-    return c.append(
+    return appendResultList(
         wrapper,
-        c.append(
-            c.any("ul"),
-            ...Object.entries(owesObj).map(([key, value]) => {
-                if (value === 0) return null;
-                return c.append(
-                    c.any("li"),
-                    c.any("i", {
-                        innerText: `${value} to ${getNameFromId(
-                            Number(key),
-                            state.users
-                        )}`,
-                    })
-                );
-            })
-        )
+        owesObj,
+        (_, value) => value === 0,
+        (_, value) => value,
+        "to"
     );
 };
 
@@ -192,7 +200,13 @@ const renderSelectedResult = (kind) => {
     let selected = ctx.table.selected();
     if (!selected) {
         const active = ctx.table.active();
-        if (!active) return hideEl(activeResultWrapperEl);
+        if (!active) {
+            if (state.is(STATE_KIND.GAME_INACTIVE)) {
+                showEl(startGameBtn, activeGameConfig);
+                enableBtn(gameSelectEl, wagerInputEl);
+            }
+            return hideEl(activeResultWrapperEl);
+        }
         selected = active;
         isActive = true;
     }
@@ -249,6 +263,7 @@ const renderSelectedResult = (kind) => {
         isTotal && isActive && !newRoundBtn.hasAttribute("disabled"),
         wagerInputEl
     );
+    disableBtn(gameSelectEl);
 
     showElIf(isActive && isTotal, activeGameActionsWrapper);
     showElIf(
@@ -256,6 +271,7 @@ const renderSelectedResult = (kind) => {
         activeGameConfig
     );
     showElIf(isActiveRound && !isTotal, whoWonEl);
+    hideEl(startGameBtn);
 
     gameSelectEl.value = state.gameId[selected.state().game];
     wagerInputEl.value = isTotal ? 0 : rounds[idx].wager;
