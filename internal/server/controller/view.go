@@ -185,8 +185,7 @@ func (c Controller) SessionPage(w http.ResponseWriter, r *http.Request) {
 		NewRound:          !isSessionOver && activeGameSession != nil && wager == 0,
 		EndRound:          !isSessionOver && activeGameSession != nil && wager > 0,
 		StartGame:         !isSessionOver && activeGameSession == nil,
-		EndGame: !isSessionOver && activeGameSession != nil &&
-			wager == 0 && activeGameSession.Result.ResolvedOnce(),
+		EndGame: !isSessionOver && activeGameSession != nil && wager == 0,
 		CancelGame: !isSessionOver && activeGameSession != nil &&
 			len(activeGameSession.Rounds) == 1 && !activeGameSession.Result.ResolvedOnce(),
 		PrevRound: activeGameSession != nil && (len(activeGameSession.Rounds) > 1 ||
