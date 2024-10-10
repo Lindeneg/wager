@@ -59,13 +59,14 @@ func (r ResultMap) Resolve() {
 }
 
 func (r ResultMap) ResolvedOnce() bool {
-	sum := 0
 	for _, obj := range r {
 		for _, val := range obj {
-			sum += val
+			if val > 0 {
+				return true
+			}
 		}
 	}
-	return sum > 0
+	return false
 }
 
 func (r ResultMap) Exists(id db.ID) bool {
