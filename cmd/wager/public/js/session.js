@@ -29,8 +29,6 @@ const ROUND_KIND = {
     PREV: 1,
 };
 
-const sessionId = Number(window.location.pathname.split("/").pop());
-
 const stateEl = document.getElementById("initial-state");
 const activeResultWrapperEl = document.getElementById("active-result-wrapper");
 const activeGameEl = document.getElementById("active-game");
@@ -346,7 +344,7 @@ whoWonBtns.forEach((btn) => {
 startGameBtn.addEventListener("click", async () => {
     if (!state.is(STATE_KIND.GAME_INACTIVE)) return;
     const { err } = await http.postJson("/game-session", {
-        sessionId,
+        sessionId: state.sessionId,
         gameId: Number(gameSelectEl.value),
         wager: Number(wagerInputEl.value),
     });
@@ -402,14 +400,14 @@ endRoundBtn.addEventListener("click", async () => {
 
 endSessionBtn.addEventListener("click", async () => {
     if (!state.is(STATE_KIND.GAME_INACTIVE)) return;
-    const { err } = await http.postJson(`/session/${sessionId}/end`);
+    const { err } = await http.postJson(`/session/${state.sessionId}/end`);
     if (err) return;
     window.location.reload();
 });
 
 cancelSessionBtn.addEventListener("click", async () => {
     if (!state.is(STATE_KIND.GAME_INACTIVE) || ctx.hasData()) return;
-    const { err } = await http.delete(`/session/${sessionId}`);
+    const { err } = await http.delete(`/session/${state.sessionId}`);
     if (err) return;
     window.location.assign("/");
 });
