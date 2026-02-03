@@ -1,5 +1,6 @@
 import {NextResponse} from "next/server";
 import type {NextRequest} from "next/server";
+import HttpException from "./lib/http-exception";
 import {verifyToken} from "@/lib/auth";
 
 const PUBLIC_PATHS = ["/login", "/signup"];
@@ -26,7 +27,7 @@ export function proxy(request: NextRequest) {
         if (isPublicApiPath(pathname) || user) {
             return NextResponse.next();
         }
-        return NextResponse.json({error: "Unauthorized"}, {status: 401});
+        return HttpException.unauthorized().toNextResponse();
     }
 
     // Authenticated users on login/signup -> redirect to home

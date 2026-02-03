@@ -7,9 +7,15 @@ export const authUserSchema = z.object({
 
 export type AuthUser = z.infer<typeof authUserSchema>;
 
-export const authCredsSchema = z.object({
+export const authLoginSchema = z.object({
     username: z.string().min(3).max(12),
     password: z.string().min(8).max(32),
 });
 
-export type AuthCredsUser = z.infer<typeof authCredsSchema>;
+export type AuthLogin = z.infer<typeof authLoginSchema>;
+
+export const authSignupSchema = authLoginSchema.extend({
+    inviteCode: z.string(),
+});
+
+export type AuthSignup = z.infer<typeof authSignupSchema>;

@@ -61,7 +61,7 @@ export function AuthForm({
         setValues((prev) => ({...prev, [name]: value}));
     }
 
-    async function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.ChangeEvent) {
         e.preventDefault();
         const result = await post(endpoint, values);
 

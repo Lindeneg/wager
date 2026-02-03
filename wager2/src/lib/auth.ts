@@ -3,8 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {cookies} from "next/headers";
 import config from "@/config";
-import type {AuthUser} from "@/types";
-import {authUserSchema} from "@/schemas";
+import {authUserSchema, type AuthUser} from "@/schemas";
 
 export function hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, config.HASH_COST);

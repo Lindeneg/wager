@@ -79,8 +79,7 @@ function UserResultCard({user}: {user: UserResult}) {
                         : isNegative
                           ? "bg-red-50 dark:bg-red-950/40"
                           : "bg-zinc-50 dark:bg-zinc-800/50"
-                }`}
-            >
+                }`}>
                 <div className="flex items-center justify-between">
                     <span className="font-medium capitalize text-zinc-900 dark:text-zinc-100">
                         {user.name}
@@ -92,8 +91,7 @@ function UserResultCard({user}: {user: UserResult}) {
                                 : isNegative
                                   ? "text-red-600 dark:text-red-400"
                                   : "text-zinc-500"
-                        }`}
-                    >
+                        }`}>
                         {isPositive && "+"}
                         {netTotal}
                     </span>
@@ -115,8 +113,7 @@ function UserResultCard({user}: {user: UserResult}) {
                             user.totalOwed > 0
                                 ? "text-green-600 dark:text-green-400"
                                 : "text-zinc-400"
-                        }`}
-                    >
+                        }`}>
                         {user.totalOwed || 0}
                     </p>
                     {hasOwed && (
@@ -124,8 +121,7 @@ function UserResultCard({user}: {user: UserResult}) {
                             {Object.entries(user.owed).map(([from, amount]) => (
                                 <li
                                     key={from}
-                                    className="text-xs text-zinc-500 dark:text-zinc-400"
-                                >
+                                    className="text-xs text-zinc-500 dark:text-zinc-400">
                                     {amount}{" "}
                                     <span className="text-zinc-400 dark:text-zinc-500">
                                         from
@@ -150,8 +146,7 @@ function UserResultCard({user}: {user: UserResult}) {
                             user.totalOwes > 0
                                 ? "text-red-600 dark:text-red-400"
                                 : "text-zinc-400"
-                        }`}
-                    >
+                        }`}>
                         {user.totalOwes || 0}
                     </p>
                     {hasOwes && (
@@ -159,8 +154,7 @@ function UserResultCard({user}: {user: UserResult}) {
                             {Object.entries(user.owes).map(([to, amount]) => (
                                 <li
                                     key={to}
-                                    className="text-xs text-zinc-500 dark:text-zinc-400"
-                                >
+                                    className="text-xs text-zinc-500 dark:text-zinc-400">
                                     {amount}{" "}
                                     <span className="text-zinc-400 dark:text-zinc-500">
                                         to

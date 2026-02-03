@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import {NextResponse} from "next/server";
+import {db} from "@/lib/db";
 
 export async function GET() {
-  const users = await db.user.findMany({
-    select: { id: true, name: true },
-    orderBy: { name: "asc" },
-  });
+    const users = await db.user.findMany({
+        select: {id: true, name: true},
+        orderBy: {name: "asc"},
+    });
 
-  return NextResponse.json({ users });
+    return NextResponse.json({users});
 }

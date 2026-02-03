@@ -3,11 +3,11 @@ import {NextRequest, NextResponse} from "next/server";
 import HttpException from "@/lib/http-exception";
 import {db} from "@/lib/db";
 import {createToken, setAuthCookie} from "@/lib/auth";
-import {authCredsSchema} from "@/schemas";
+import {authLoginSchema} from "@/schemas";
 import {parseRequestBody} from "@/lib/parse";
 
 export async function POST(request: NextRequest) {
-    const body = await parseRequestBody(request, authCredsSchema);
+    const body = await parseRequestBody(request, authLoginSchema);
 
     if (!body.ok) {
         return body.ctx.toNextResponse();

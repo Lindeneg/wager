@@ -1,80 +1,44 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import {
-  hashPassword,
-  createToken,
-  setAuthCookie,
-  validateUsername,
-  validatePassword,
-  getInviteCode,
-} from "@/lib/auth";
-
-interface SignupRequest {
-  username: string;
-  password: string;
-  inviteCode: string;
-}
+import {NextRequest, NextResponse} from "next/server";
+import HttpException from "@/lib/http-exception";
+import {db} from "@/lib/db";
+import {hashPassword, createToken, setAuthCookie} from "@/lib/auth";
+import {parseRequestBody} from "@/lib/parse";
+import {authSignupSchema} from "@/schemas";
+import config from "@/config";
 
 export async function POST(request: NextRequest) {
-  let body: SignupRequest;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
+    const body = await parseRequestBody(request, authSignupSchema);
 
-  const { username, password, inviteCode } = body;
+    if (!body.ok) {
+        return body.ctx.toNextResponse();
+    }
 
-  if (!username || !password || !inviteCode) {
-    return NextResponse.json(
-      { error: "Username, password, and invite code are required" },
-      { status: 400 }
-    );
-  }
+    const {username, password, inviteCode} = body.data;
 
-  // Validate invite code
-  if (inviteCode !== getInviteCode()) {
-    return NextResponse.json(
-      { error: "Invalid invite code" },
-      { status: 403 }
-    );
-  }
+    if (inviteCode !== config.INVITE_CODE) {
+        return HttpException.forbidden().toNextResponse();
+    }
 
-  // Validate username
-  const usernameError = validateUsername(username);
-  if (usernameError) {
-    return NextResponse.json({ error: usernameError }, { status: 400 });
-  }
+    // Check if user already exists
+    const existingUser = await db.user.findUnique({
+        where: {name: username.toLowerCase()},
+    });
 
-  // Validate password
-  const passwordError = validatePassword(password);
-  if (passwordError) {
-    return NextResponse.json({ error: passwordError }, { status: 400 });
-  }
+    if (existingUser) {
+        return HttpException.unprocessable().toNextResponse();
+    }
 
-  // Check if user already exists
-  const existingUser = await db.user.findUnique({
-    where: { name: username.toLowerCase() },
-  });
+    // Create user
+    const hashedPassword = await hashPassword(password);
+    const user = await db.user.create({
+        data: {
+            name: username.toLowerCase(),
+            password: hashedPassword,
+        },
+    });
 
-  if (existingUser) {
-    return NextResponse.json(
-      { error: "Username already exists" },
-      { status: 422 }
-    );
-  }
+    const token = createToken(user.id, user.name);
+    await setAuthCookie(token);
 
-  // Create user
-  const hashedPassword = await hashPassword(password);
-  const user = await db.user.create({
-    data: {
-      name: username.toLowerCase(),
-      password: hashedPassword,
-    },
-  });
-
-  const token = createToken(user.id, user.name);
-  await setAuthCookie(token);
-
-  return new NextResponse(null, { status: 201 });
+    return new NextResponse(null, {status: 201});
 }
