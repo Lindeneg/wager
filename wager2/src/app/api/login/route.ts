@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         return HttpException.notFound().toNextResponse();
     }
 
-    const passwordMatch = await bcrypt.compare(user.password, password);
+    const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
         return HttpException.notFound().toNextResponse();
     }

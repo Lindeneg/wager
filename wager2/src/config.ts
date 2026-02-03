@@ -46,7 +46,7 @@ const config: Config = {
     JWT_COOKIE: required("JWT_COOKIE"),
     INVITE_CODE: required("INVITE_CODE"),
 
-    HASH_COST: optional("INVITE_CODE", int, 10),
+    HASH_COST: optional("HASH_COST", int, 10),
     COOKIE_MAX_AGE: optional("COOKIE_MAX_AGE", int, 7 * 24 * 60 * 60),
 
     isProduction() {

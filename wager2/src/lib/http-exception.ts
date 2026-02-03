@@ -31,7 +31,7 @@ class HttpException extends Error {
         responseInit: ResponseInit = {}
     ) {
         return NextResponse.json(
-            {error: this.details, ...bodyExt},
+            {error: this.details, msg: this.message, ...bodyExt},
             {status: this.statusCode, ...responseInit}
         );
     }
