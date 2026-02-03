@@ -3,6 +3,7 @@ import type {NextRequest} from "next/server";
 import {verifyToken} from "@/lib/auth";
 
 const PUBLIC_PATHS = ["/login", "/signup"];
+const PUBLIC_API_PATHS = ["/api/login", "/api/signup"];
 
 function isPublicPath(pathname: string): boolean {
     return PUBLIC_PATHS.some(
@@ -11,9 +12,7 @@ function isPublicPath(pathname: string): boolean {
 }
 
 function isPublicApiPath(pathname: string): boolean {
-    return (
-        pathname.startsWith("/api/login") || pathname.startsWith("/api/signup")
-    );
+    return PUBLIC_API_PATHS.some((path) => pathname.startsWith(path));
 }
 
 export function proxy(request: NextRequest) {
@@ -24,9 +23,7 @@ export function proxy(request: NextRequest) {
 
     // Protected API routes require auth
     if (pathname.startsWith("/api/")) {
-        if (isPublicApiPath(pathname)) {
-            return NextResponse.next();
-        } else if (user) {
+        if (isPublicApiPath(pathname) || user) {
             return NextResponse.next();
         }
         return NextResponse.json({error: "Unauthorized"}, {status: 401});
@@ -39,7 +36,6 @@ export function proxy(request: NextRequest) {
 
     // Unauthenticated users on any other page -> redirect to login
     if (!isPublicPath(pathname) && !user) {
-        console.log("TEST");
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
