@@ -15,6 +15,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import {PageLayout} from "@/components/layout";
+import {ErrorAlert} from "@/components/feedback";
 
 interface Field {
     name: string;
@@ -61,7 +63,7 @@ export function AuthForm({
         setValues((prev) => ({...prev, [name]: value}));
     }
 
-    async function handleSubmit(e: React.ChangeEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         const result = await post(endpoint, values);
 
@@ -72,7 +74,7 @@ export function AuthForm({
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <PageLayout centered>
             <Card className="w-full max-w-md">
                 <CardHeader>
                     <CardTitle className="text-2xl">{title}</CardTitle>
@@ -80,12 +82,7 @@ export function AuthForm({
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
-                        {error && (
-                            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-950 dark:text-red-400">
-                                {/* TODO oh god remove this asap!! */}
-                                {JSON.stringify(error)}
-                            </div>
-                        )}
+                        <ErrorAlert message={String(error)} />
                         {fields.map((field) => (
                             <div key={field.name} className="space-y-2">
                                 <Label htmlFor={field.name}>
@@ -129,6 +126,6 @@ export function AuthForm({
                     </CardFooter>
                 </form>
             </Card>
-        </div>
+        </PageLayout>
     );
 }

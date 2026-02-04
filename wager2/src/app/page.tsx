@@ -1,13 +1,14 @@
 import {Suspense} from "react";
 import {getAuthUser} from "@/lib/auth";
+import {PageLayout, PageContainer} from "@/components/layout";
 import {Header, ResultsSection, SessionsTable} from "@/components/home";
 
 export default async function HomePage() {
     const user = await getAuthUser();
 
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-            <div className="mx-auto max-w-6xl px-4 py-6">
+        <PageLayout>
+            <PageContainer>
                 <Header username={user?.name} />
 
                 <main className="mt-8 space-y-8">
@@ -19,15 +20,15 @@ export default async function HomePage() {
                         <SessionsTable />
                     </Suspense>
                 </main>
-            </div>
-        </div>
+            </PageContainer>
+        </PageLayout>
     );
 }
 
 function ResultsSkeleton() {
     return (
         <section>
-            <h2 className="mb-4 text-xl font-semibold">Current Results</h2>
+            <div className="mb-4 h-7 w-40 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[1, 2, 3].map((i) => (
                     <div
@@ -43,7 +44,7 @@ function ResultsSkeleton() {
 function TableSkeleton() {
     return (
         <section>
-            <h2 className="mb-4 text-xl font-semibold">Sessions</h2>
+            <div className="mb-4 h-7 w-32 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
             <div className="h-64 animate-pulse rounded-lg bg-zinc-200 dark:bg-zinc-800" />
         </section>
     );

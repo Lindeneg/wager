@@ -1,5 +1,6 @@
 import {db} from "@/lib/db";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Card, CardContent} from "@/components/ui/card";
+import {SectionTitle} from "@/components/typography";
 
 interface UserResult {
     id: number;
@@ -50,9 +51,7 @@ export async function ResultsSection() {
 
     return (
         <section>
-            <h2 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-                Current Results
-            </h2>
+            <SectionTitle className="mb-4">Current Results</SectionTitle>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {results.map((user) => (
                     <UserResultCard key={user.id} user={user} />
