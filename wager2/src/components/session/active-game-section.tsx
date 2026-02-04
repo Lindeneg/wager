@@ -28,7 +28,7 @@ export function ActiveGameSection({
     const currentRound = isShowingTotal ? null : rounds[roundIndex];
     const isActiveRound = currentRound?.active || false;
 
-    const canGoPrev = roundIndex < rounds.length - 1;
+    const canGoPrev = roundIndex === -1 || roundIndex > 0;
     const canGoNext = !isShowingTotal;
 
     const resultJson = isShowingTotal
@@ -38,13 +38,17 @@ export function ActiveGameSection({
 
     function handlePrev() {
         if (canGoPrev) {
-            setRoundIndex((prev) => (prev === -1 ? rounds.length - 1 : prev + 1));
+            setRoundIndex((prev) =>
+                prev === -1 ? rounds.length - 1 : prev - 1
+            );
         }
     }
 
     function handleNext() {
         if (canGoNext) {
-            setRoundIndex((prev) => prev - 1);
+            setRoundIndex((prev) =>
+                prev >= rounds.length - 1 ? -1 : prev + 1
+            );
         }
     }
 
@@ -52,9 +56,30 @@ export function ActiveGameSection({
         ? "Total"
         : `Round ${currentRound?.round}`;
 
-    const isActive = isShowingTotal
-        ? !gameSession.ended
-        : isActiveRound;
+    const isActive = isShowingTotal ? !gameSession.ended : isActiveRound;
+
+    function RoundWager() {
+        if (!isShowingTotal && currentRound) {
+            return (
+                <p className="text-center text-sm text-zinc-500">
+                    Wager: {currentRound.wager}
+                </p>
+            );
+        }
+        if (isShowingTotal) {
+            return (
+                <p className="text-center text-sm text-zinc-500">
+                    Total Wager:{" "}
+                    {rounds.reduce((acc, cur) => {
+                        if (!cur.active) {
+                            acc += cur.wager;
+                        }
+                        return acc;
+                    }, 0)}
+                </p>
+            );
+        }
+    }
 
     return (
         <div className="space-y-4 rounded-lg border bg-white p-6 dark:bg-zinc-900">
@@ -91,14 +116,8 @@ export function ActiveGameSection({
                 </Button>
             </div>
 
-            {/* Wager display for rounds */}
-            {!isShowingTotal && currentRound && (
-                <p className="text-center text-sm text-zinc-500">
-                    Wager: {currentRound.wager}
-                </p>
-            )}
+            <RoundWager />
 
-            {/* Results */}
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {users.map((user) => (
                     <ResultCard
