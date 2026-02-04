@@ -1,5 +1,6 @@
 "use client";
 
+import {useState} from "react";
 import {SectionTitle} from "@/components/typography";
 import {SessionHeader} from "./session-header";
 import {ResultCard} from "./result-card";
@@ -33,6 +34,8 @@ export function SessionView({
     activeGameSession,
     activeRound,
 }: SessionViewProps) {
+    const [selectedGameSession, setSelectedGameSession] =
+        useState<GameSessionData | null>(null);
     const state: SessionState = getSessionState(
         session,
         activeGameSession,
@@ -41,8 +44,36 @@ export function SessionView({
 
     const sessionResultData = JSON.parse(session.result || "{}");
 
-    // Filter out the active game session for the history table
-    const completedGameSessions = gameSessions.filter((gs) => gs.ended);
+    function onGameSessionTableClick(gameSession: GameSessionData) {
+        if (
+            activeGameSession?.id === gameSession.id ||
+            selectedGameSession?.id === gameSession.id
+        ) {
+            return setSelectedGameSession(null);
+        }
+        setSelectedGameSession(gameSession);
+    }
+
+    function GameSection() {
+        if (selectedGameSession) {
+            return (
+                <ActiveGameSection
+                    gameSession={selectedGameSession}
+                    users={users}
+                    activeRound={null}
+                />
+            );
+        }
+        if (activeGameSession) {
+            return (
+                <ActiveGameSection
+                    gameSession={activeGameSession}
+                    users={users}
+                    activeRound={activeRound}
+                />
+            );
+        }
+    }
 
     return (
         <div className="space-y-8">
@@ -67,27 +98,25 @@ export function SessionView({
                 </div>
             </div>
 
-            {/* Active Game Section */}
-            {activeGameSession && (
-                <ActiveGameSection
-                    gameSession={activeGameSession}
+            <GameSection />
+
+            {!selectedGameSession && (
+                <GameControls
+                    sessionId={session.id}
+                    state={state}
+                    games={games}
                     users={users}
+                    activeGameSession={activeGameSession}
                     activeRound={activeRound}
                 />
             )}
 
-            {/* Game Controls */}
-            <GameControls
-                sessionId={session.id}
-                state={state}
-                games={games}
-                users={users}
-                activeGameSession={activeGameSession}
-                activeRound={activeRound}
-            />
-
             {/* Game History */}
-            <GameSessionsTable gameSessions={completedGameSessions} />
+            <GameSessionsTable
+                gameSessions={gameSessions}
+                selectedId={selectedGameSession?.id ?? null}
+                onClick={onGameSessionTableClick}
+            />
         </div>
     );
 }
