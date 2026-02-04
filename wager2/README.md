@@ -1,3 +1,22 @@
+TODO:
+
+- Table column spacing/alignment. It looks not good, especially the `game-history` table.
+- Everything clickable should have a mouse pointer.
+- Errors. We need to display errors nicely, we got some zod information back we can display.
+- Implement tests. Units and e2e. Look at postman stuff.
+
+NEW FEATURES:
+
+- Show "best game" in the player card on the overview section. Best game, is just the game
+they have won the most money in.
+- Have a stat page:
+- Game overview. How many rounds for a given game and how much money wagered? Also, which
+player has won the most. Maybe in a table-like view.
+- Head-to-Head breakdown between two players for a speciifc game or a range of specific games.
+- Graph showing the evolution of each players winnings/losses in a multi-colored line plot.
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
