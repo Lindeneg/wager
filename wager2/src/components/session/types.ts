@@ -21,8 +21,8 @@ export interface GameSessionData {
     gameId: number;
     gameName: string;
     result: string;
-    started: string;
-    ended: string | null;
+    started: Date;
+    ended: Date | null;
     rounds: Round[];
 }
 
