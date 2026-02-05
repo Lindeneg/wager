@@ -14,6 +14,7 @@ import {
 import {useApi} from "@/hooks/use-api";
 import {Card, CardContent} from "@/components/ui/card";
 import {LoadingState, EmptyState} from "@/components/feedback";
+import {formatDateTime} from "@/lib/format";
 
 interface User {
     id: number;
@@ -60,20 +61,14 @@ export function EvolutionChart({users}: EvolutionChartProps) {
     }
 
     if (data.length === 0) {
-        return <EmptyState message="No session data yet" />;
+        return <EmptyState title="No session data yet" />;
     }
 
     // Transform data for recharts
     const chartData = data.map((point, index) => {
-        const date = new Date(point.timestamp);
-        const formatted = date.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-        });
-
         const row: Record<string, number | string> = {
-            name: formatted,
-            index: index + 1,
+            name: `Session ${index + 1}`,
+            timestamp: formatDateTime(point.timestamp),
         };
 
         for (const user of users) {
@@ -82,6 +77,30 @@ export function EvolutionChart({users}: EvolutionChartProps) {
 
         return row;
     });
+
+    function CustomTooltip({active, payload, label}: {
+        active?: boolean;
+        payload?: Array<{name: string; value: number; color: string}>;
+        label?: string;
+    }) {
+        if (!active || !payload?.length) return null;
+
+        const timestamp = payload[0]?.payload?.timestamp;
+
+        return (
+            <div className="rounded-lg border bg-background p-3 shadow-md">
+                <p className="mb-2 font-medium">{label}</p>
+                {timestamp && (
+                    <p className="mb-2 text-xs text-zinc-500">{timestamp}</p>
+                )}
+                {payload.map((entry) => (
+                    <p key={entry.name} style={{color: entry.color}}>
+                        {entry.name}: {entry.value}
+                    </p>
+                ))}
+            </div>
+        );
+    }
 
     return (
         <Card>
@@ -99,14 +118,7 @@ export function EvolutionChart({users}: EvolutionChartProps) {
                             tickLine={false}
                             axisLine={false}
                         />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: "var(--background)",
-                                border: "1px solid var(--border)",
-                                borderRadius: "8px",
-                            }}
-                            isAnimationActive={false}
-                        />
+                        <Tooltip content={<CustomTooltip />} />
                         <Legend />
                         {users.map((user, index) => (
                             <Line
@@ -117,7 +129,6 @@ export function EvolutionChart({users}: EvolutionChartProps) {
                                 strokeWidth={2}
                                 dot={{r: 4}}
                                 activeDot={{r: 6}}
-                                isAnimationActive={false}
                             />
                         ))}
                     </LineChart>

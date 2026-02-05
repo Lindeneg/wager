@@ -1,5 +1,7 @@
+import Link from "next/link";
 import {PageLayout, PageContainer} from "@/components/layout";
 import {SectionTitle} from "@/components/typography";
+import {Button} from "@/components/ui/button";
 import {GameStatsTable} from "@/components/stats/game-stats-table";
 import {HeadToHead} from "@/components/stats/head-to-head";
 import {EvolutionChart} from "@/components/stats/evolution-chart";
@@ -14,7 +16,10 @@ export default async function StatsPage() {
     return (
         <PageLayout>
             <PageContainer>
-                <header className="mb-8">
+                <header className="mb-8 flex items-center gap-4">
+                    <Button variant="outline" asChild>
+                        <Link href="/">Back</Link>
+                    </Button>
                     <h1 className="text-2xl font-bold">Statistics</h1>
                 </header>
 

@@ -113,7 +113,7 @@ export function HeadToHead({users}: HeadToHeadProps) {
                                 <p className="text-2xl font-bold">
                                     {stats.player1.name}
                                 </p>
-                                <p className="text-4xl font-bold text-green-600 dark:text-green-400">
+                                <p className="text-4xl font-bold">
                                     {stats.player1Wins}
                                 </p>
                                 <p className="text-sm text-zinc-500">wins</p>
@@ -137,7 +137,7 @@ export function HeadToHead({users}: HeadToHeadProps) {
                                 <p className="text-2xl font-bold">
                                     {stats.player2.name}
                                 </p>
-                                <p className="text-4xl font-bold text-green-600 dark:text-green-400">
+                                <p className="text-4xl font-bold">
                                     {stats.player2Wins}
                                 </p>
                                 <p className="text-sm text-zinc-500">wins</p>
