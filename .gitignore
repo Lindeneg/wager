@@ -4,9 +4,9 @@ bin
 tmp
 temp
 notes
-.*env
+.env*
 *.d.ts
-!.test.env
+!.env.example
 connect
 
 # dependencies
@@ -38,9 +38,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
 
 # vercel
 .vercel
