@@ -9,10 +9,9 @@
         "lint": "eslint",
         "test:unit": "vitest run",
         "test:e2e": "bash ./e2e",
+        "test:api": "vitest run --config vitest.config.integration.ts",
         "env": "dotenv",
-        "prisma": "prisma",
-        "test:unit": "vitest run",
-        "test:api": "vitest run --config vitest.config.integration.ts"
+        "prisma": "prisma"
     },
     "dependencies": {
         "@prisma/adapter-better-sqlite3": "^7.3.0",
