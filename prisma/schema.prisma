@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  password String
+
+  sessionParticipants SessionParticipant[]
+  events              Event[]
+
+  @@map("user")
+}
+
+model Game {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  gameSessions GameSession[]
+
+  @@map("game")
+}
+
+model Session {
+  id      Int       @id @default(autoincrement())
+  result  String
+  started DateTime
+  ended   DateTime?
+
+  participants SessionParticipant[]
+  gameSessions GameSession[]
+
+  @@map("session")
+}
+
+model SessionParticipant {
+  id        Int @id @default(autoincrement())
+  userId    Int @map("user_id")
+  sessionId Int @map("session_id")
+
+  user    User    @relation(fields: [userId], references: [id])
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("session_participant")
+}
+
+model GameSession {
+  id        Int       @id @default(autoincrement())
+  sessionId Int       @map("session_id")
+  gameId    Int       @map("game_id")
+  result    String
+  started   DateTime
+  ended     DateTime?
+
+  session Session            @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  game    Game               @relation(fields: [gameId], references: [id])
+  rounds  GameSessionRound[]
+
+  @@map("game_session")
+}
+
+model GameSessionRound {
+  id            Int    @id @default(autoincrement())
+  gameSessionId Int    @map("game_session_id")
+  result        String
+  round         Int
+  wager         Int
+  active        Int    @default(1)
+
+  gameSession GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+
+  @@map("game_session_round")
+}
+
+model Result {
+  id   Int    @id @default(autoincrement())
+  data String
+
+  @@map("result")
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  description String
+  occured     DateTime
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("event")
+}
