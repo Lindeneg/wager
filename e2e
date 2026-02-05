@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
 
-source ./.test.env
+export __WAGER_MODE=test
 
-if [[ $PORT == "" ]] then
-    PORT=5000
-fi
+source .env.test
 
-POSTMAN="postman/wager-test-suite.postman_collection.json"
-URL="http://localhost:$PORT/ping"
-TIMEOUT=30
+OLD_DB_PATH=$(dirname "${DATABASE_URL#file:}")
+
+echo removing old db at $OLD_DB_PATH
+rm -rf $OLD_DB_PATH
+mkdir $OLD_DB_PATH
+
+echo migrating test db
+npm run env -- -e .env.test -- npm run prisma migrate dev -- -n test
+
+URL="http://localhost:$PORT/api/ping"
+TIMEOUT=5
 
 ping_until_success() {
     echo pinging $URL
@@ -26,22 +32,28 @@ ping_until_success() {
     done
 }
 
-go build -o ./bin/wager ./cmd/wager
-./bin/wager test &
-WAGER_PID=$!
+kill_server() {
+    local pid=$(netstat -ano | grep ":$PORT" | grep LISTENING | awk '{print $5}' | head -1)
+    if [ -n "$pid" ]; then
+        echo "Killing process $pid on port $PORT"
+        taskkill //F //PID $pid 2>/dev/null
+    fi
+}
+
+echo starting nextjs server
+npm run dev -- -p $PORT &
 
 ping_until_success
 RESULT=$?
 
-if [[ $RESULT == 1 ]] then
+if [[ $RESULT == 1 ]]; then
     echo "Failed to connect to $URL"
-    kill $WAGER_PID
+    kill_server
     exit 1
 fi
 
-npx -y newman run $POSTMAN
+npm run test:api
 EXIT_CODE=$?
 
-kill $WAGER_PID
+kill_server
 exit $EXIT_CODE
-
