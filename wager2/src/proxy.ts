@@ -4,7 +4,7 @@ import HttpException from "./lib/http-exception";
 import {verifyToken} from "@/lib/auth";
 
 const PUBLIC_PATHS = ["/login", "/signup"];
-const PUBLIC_API_PATHS = ["/api/login", "/api/signup"];
+const PUBLIC_API_PATHS = ["/api/login", "/api/signup", "/api/ping"];
 
 function isPublicPath(pathname: string): boolean {
     return PUBLIC_PATHS.some(

@@ -1,5 +1,16 @@
+import dotenv from "dotenv";
+import path from "path";
+
+if (process.env["__WAGER_MODE"] === "test") {
+    dotenv.config({
+        path: path.join(process.cwd(), ".env.test"),
+        override: true,
+    });
+}
+
 type Config = {
     DATABASE_URL: string;
+    PORT: number;
     JWT_SECRET: string;
     JWT_COOKIE: string;
     INVITE_CODE: string;
@@ -8,6 +19,7 @@ type Config = {
 
     isProduction(): boolean;
     isDev(): boolean;
+    isTest(): boolean;
 };
 
 type Transform<T> = (prop: keyof Config, value: string) => T;
@@ -46,6 +58,7 @@ const config: Config = {
     JWT_COOKIE: required("JWT_COOKIE"),
     INVITE_CODE: required("INVITE_CODE"),
 
+    PORT: optional("PORT", int, 3000),
     HASH_COST: optional("HASH_COST", int, 10),
     COOKIE_MAX_AGE: optional("COOKIE_MAX_AGE", int, 7 * 24 * 60 * 60),
 
@@ -55,6 +68,10 @@ const config: Config = {
 
     isDev() {
         return process.env.NODE_ENV === "development";
+    },
+
+    isTest() {
+        return process.env.NODE_ENV === "test";
     },
 };
 

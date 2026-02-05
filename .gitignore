@@ -1,6 +1,5 @@
 .idea
-/data
-/wager2/data
+*.db*
 bin
 tmp
 temp
