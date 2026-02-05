@@ -13,6 +13,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {useApi} from "@/hooks/use-api";
+import {UserToggleSelect} from "@/components/user-toggle-select";
 import type {Game, User, SessionState, GameSessionData, Round} from "./types";
 
 interface GameControlsProps {
@@ -167,25 +168,12 @@ export function GameControls({
                     <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
                         Who Won?
                     </h3>
-                    <div className="flex flex-wrap gap-2">
-                        {users.map((user) => (
-                            <Button
-                                key={user.id}
-                                variant={
-                                    selectedWinner === user.id
-                                        ? "default"
-                                        : "outline"
-                                }
-                                onClick={() => setSelectedWinner(user.id)}
-                                className={
-                                    selectedWinner === user.id
-                                        ? "bg-green-600 hover:bg-green-700"
-                                        : ""
-                                }>
-                                {user.name}
-                            </Button>
-                        ))}
-                    </div>
+                    <UserToggleSelect
+                        users={users}
+                        selectedIds={selectedWinner !== null ? [selectedWinner] : []}
+                        onToggle={(id) => setSelectedWinner(id)}
+                        singleSelect
+                    />
                     <Button
                         onClick={handleEndRound}
                         disabled={!canEndRound || loading}

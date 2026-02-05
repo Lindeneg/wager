@@ -15,6 +15,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {useApi} from "@/hooks/use-api";
+import {UserToggleSelect} from "@/components/user-toggle-select";
 
 interface User {
     id: number;
@@ -102,27 +103,12 @@ export function Header({username}: HeaderProps) {
                         </DialogHeader>
                         <div className="space-y-4 py-4">
                             <Label>Select Participants (min 2)</Label>
-                            <div className="flex flex-wrap gap-2">
-                                {users.map((user) => (
-                                    <Button
-                                        key={user.id}
-                                        type="button"
-                                        variant={
-                                            selectedUserIds.includes(user.id)
-                                                ? "default"
-                                                : "outline"
-                                        }
-                                        size="sm"
-                                        onClick={() => toggleUser(user.id)}>
-                                        {user.name}
-                                    </Button>
-                                ))}
-                            </div>
-                            {users.length === 0 && (
-                                <p className="text-sm text-zinc-500">
-                                    Loading users...
-                                </p>
-                            )}
+                            <UserToggleSelect
+                                users={users}
+                                selectedIds={selectedUserIds}
+                                onToggle={toggleUser}
+                                emptyMessage="Loading users..."
+                            />
                         </div>
                         <DialogFooter>
                             <Button
