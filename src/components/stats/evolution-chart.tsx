@@ -10,6 +10,8 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
+    TooltipProps,
+    TooltipContentProps,
 } from "recharts";
 import {useApi} from "@/hooks/use-api";
 import {Card, CardContent} from "@/components/ui/card";
@@ -78,14 +80,14 @@ export function EvolutionChart({users}: EvolutionChartProps) {
         return row;
     });
 
-    function CustomTooltip({active, payload, label}: {
-        active?: boolean;
-        payload?: Array<{name: string; value: number; color: string}>;
-        label?: string;
-    }) {
+    function CustomTooltip({
+        active,
+        payload,
+        label,
+    }: TooltipContentProps<string, string>) {
         if (!active || !payload?.length) return null;
 
-        const timestamp = payload[0]?.payload?.timestamp;
+        const timestamp = payload[0]?.payload.timestamp ?? "-";
 
         return (
             <div className="rounded-lg border bg-background p-3 shadow-md">
