@@ -80,30 +80,6 @@ export function EvolutionChart({users}: EvolutionChartProps) {
         return row;
     });
 
-    function CustomTooltip({
-        active,
-        payload,
-        label,
-    }: TooltipContentProps<string, string>) {
-        if (!active || !payload?.length) return null;
-
-        const timestamp = payload[0]?.payload.timestamp ?? "-";
-
-        return (
-            <div className="rounded-lg border bg-background p-3 shadow-md">
-                <p className="mb-2 font-medium">{label}</p>
-                {timestamp && (
-                    <p className="mb-2 text-xs text-zinc-500">{timestamp}</p>
-                )}
-                {payload.map((entry) => (
-                    <p key={entry.name} style={{color: entry.color}}>
-                        {entry.name}: {entry.value}
-                    </p>
-                ))}
-            </div>
-        );
-    }
-
     return (
         <Card>
             <CardContent className="p-6">
@@ -120,7 +96,34 @@ export function EvolutionChart({users}: EvolutionChartProps) {
                             tickLine={false}
                             axisLine={false}
                         />
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip
+                            content={function ({active, payload, label}) {
+                                if (!active || !payload?.length) return null;
+
+                                const timestamp =
+                                    payload[0]?.payload.timestamp ?? "-";
+
+                                return (
+                                    <div className="rounded-lg border bg-background p-3 shadow-md">
+                                        <p className="mb-2 font-medium">
+                                            {label}
+                                        </p>
+                                        {timestamp && (
+                                            <p className="mb-2 text-xs text-zinc-500">
+                                                {timestamp}
+                                            </p>
+                                        )}
+                                        {payload.map((entry) => (
+                                            <p
+                                                key={entry.name}
+                                                style={{color: entry.color}}>
+                                                {entry.name}: {entry.value}
+                                            </p>
+                                        ))}
+                                    </div>
+                                );
+                            }}
+                        />
                         <Legend />
                         {users.map((user, index) => (
                             <Line
