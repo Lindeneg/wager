@@ -1,6 +1,16 @@
 import {describe, test, expect} from "vitest";
 import {client, createClient} from "../client";
 
+// Store IDs for stateful tests
+const state: {
+    milesId: number;
+    billId: number;
+    johnId: number;
+    pokerGameId: number;
+    sessionId: number;
+    gameSessionId: number;
+} = {} as typeof state;
+
 describe("API", () => {
     // =========================================================================
     // UNAUTHENTICATED ACCESS
@@ -89,6 +99,7 @@ describe("API", () => {
             expect(res.data).toHaveProperty("id");
             expect(res.data).toHaveProperty("name", "Miles");
             expect(client.hasCookie("test-cookie")).toBe(true);
+            state.milesId = res.data.id;
         });
 
         test("cannot signup with same username (exact case)", async () => {
@@ -122,6 +133,7 @@ describe("API", () => {
 
             expect(res.status).toBe(200);
             expect(res.data).toHaveProperty("name", "Bill");
+            state.billId = res.data.id;
         });
 
         test("can signup user John", async () => {
@@ -133,6 +145,7 @@ describe("API", () => {
 
             expect(res.status).toBe(200);
             expect(res.data).toHaveProperty("name", "John");
+            state.johnId = res.data.id;
         });
     });
 
@@ -236,6 +249,181 @@ describe("API", () => {
             expect(res.status).toBe(200);
             expect(res.data).toHaveProperty("games");
             expect(Array.isArray(res.data.games)).toBe(true);
+        });
+
+        test("can create a game", async () => {
+            const res = await client.post("/api/game", {name: "Poker"});
+
+            expect(res.status).toBe(200);
+            expect(res.data).toHaveProperty("id");
+            expect(res.data).toHaveProperty("name", "Poker");
+            state.pokerGameId = res.data.id;
+        });
+
+        test("cannot create game with duplicate name", async () => {
+            const res = await client.post("/api/game", {name: "Poker"});
+
+            expect(res.status).toBe(422);
+        });
+
+        test("game appears in list", async () => {
+            const res = await client.get("/api/game");
+
+            expect(res.status).toBe(200);
+            expect(res.data.games.length).toBe(1);
+            expect(res.data.games[0].name).toBe("Poker");
+        });
+    });
+
+    // =========================================================================
+    // WAGER FLOW - Full session with game rounds
+    // =========================================================================
+    describe("Wager Flow", () => {
+        test("can create a session with participants", async () => {
+            const res = await client.post("/api/session", {
+                userIds: [state.milesId, state.billId, state.johnId],
+            });
+
+            expect(res.status).toBe(200);
+            expect(res.data).toHaveProperty("id");
+            expect(res.data).toHaveProperty("users");
+            expect(res.data.users.length).toBe(3);
+            expect(res.data.ended).toBeNull();
+            state.sessionId = res.data.id;
+        });
+
+        test("cannot create another session while one is active", async () => {
+            const res = await client.post("/api/session", {
+                userIds: [state.milesId, state.billId],
+            });
+
+            expect(res.status).toBe(422);
+        });
+
+        test("session appears in list", async () => {
+            const res = await client.get("/api/session");
+
+            expect(res.status).toBe(200);
+            expect(res.data.sessions.length).toBe(1);
+            expect(res.data.sessions[0].isActive).toBe(true);
+        });
+
+        test("can get session details", async () => {
+            const res = await client.get(`/api/session/${state.sessionId}`);
+
+            expect(res.status).toBe(200);
+            expect(res.data.id).toBe(state.sessionId);
+            expect(res.data.users.length).toBe(3);
+            expect(res.data.gameSessions.length).toBe(0);
+        });
+
+        test("can create a game session", async () => {
+            const res = await client.post("/api/game-session", {
+                sessionId: state.sessionId,
+                gameId: state.pokerGameId,
+                wager: 10,
+            });
+
+            expect(res.status).toBe(200);
+            expect(res.data).toHaveProperty("id");
+            expect(res.data.gameName).toBe("Poker");
+            expect(res.data.rounds.length).toBe(1);
+            expect(res.data.rounds[0].wager).toBe(10);
+            expect(res.data.rounds[0].active).toBe(true);
+            state.gameSessionId = res.data.id;
+        });
+
+        test("cannot create another game session while one is active", async () => {
+            const res = await client.post("/api/game-session", {
+                sessionId: state.sessionId,
+                gameId: state.pokerGameId,
+                wager: 10,
+            });
+
+            expect(res.status).toBe(422);
+        });
+
+        test("Miles wins round 1", async () => {
+            const res = await client.post(
+                `/api/game-session/${state.gameSessionId}/end-round`,
+                {winnerId: state.milesId}
+            );
+
+            expect(res.status).toBe(200);
+            expect(res.data.rounds[0].active).toBe(false);
+        });
+
+        test("can start round 2", async () => {
+            const res = await client.post(
+                `/api/game-session/${state.gameSessionId}/new-round`,
+                {wager: 20}
+            );
+
+            expect(res.status).toBe(200);
+            expect(res.data.round).toBe(2);
+            expect(res.data.wager).toBe(20);
+            expect(res.data.active).toBe(true);
+        });
+
+        test("Bill wins round 2", async () => {
+            const res = await client.post(
+                `/api/game-session/${state.gameSessionId}/end-round`,
+                {winnerId: state.billId}
+            );
+
+            expect(res.status).toBe(200);
+            expect(res.data.rounds.length).toBe(2);
+        });
+
+        test("can start round 3", async () => {
+            const res = await client.post(
+                `/api/game-session/${state.gameSessionId}/new-round`,
+                {wager: 15}
+            );
+
+            expect(res.status).toBe(200);
+            expect(res.data.round).toBe(3);
+        });
+
+        test("Miles wins round 3", async () => {
+            const res = await client.post(
+                `/api/game-session/${state.gameSessionId}/end-round`,
+                {winnerId: state.milesId}
+            );
+
+            expect(res.status).toBe(200);
+        });
+
+        test("can end game session", async () => {
+            const res = await client.post(
+                `/api/game-session/${state.gameSessionId}/end`
+            );
+
+            expect(res.status).toBe(200);
+            expect(res.data.ended).not.toBeNull();
+        });
+
+        test("cannot end game session again", async () => {
+            const res = await client.post(
+                `/api/game-session/${state.gameSessionId}/end`
+            );
+
+            expect(res.status).toBe(422);
+        });
+
+        test("can end session", async () => {
+            const res = await client.post(
+                `/api/session/${state.sessionId}/end`
+            );
+
+            expect(res.status).toBe(200);
+        });
+
+        test("session is no longer active", async () => {
+            const res = await client.get(`/api/session/${state.sessionId}`);
+
+            expect(res.status).toBe(200);
+            expect(res.data.ended).not.toBeNull();
         });
     });
 });
