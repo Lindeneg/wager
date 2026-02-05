@@ -69,12 +69,13 @@ model GameSession {
 }
 
 model GameSessionRound {
-  id            Int    @id @default(autoincrement())
-  gameSessionId Int    @map("game_session_id")
+  id            Int     @id @default(autoincrement())
+  gameSessionId Int     @map("game_session_id")
   result        String
   round         Int
   wager         Int
-  active        Int    @default(1)
+  active        Int     @default(1)
+  note          String?
 
   gameSession GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
 

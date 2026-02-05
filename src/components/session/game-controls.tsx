@@ -41,6 +41,7 @@ export function GameControls({
         activeGameSession?.gameId.toString() || games[0]?.id.toString() || ""
     );
     const [wager, setWager] = useState(activeRound?.wager.toString() || "100");
+    const [note, setNote] = useState("");
     const [selectedWinner, setSelectedWinner] = useState<number | null>(null);
 
     const canStartGame = state === "GAME_INACTIVE";
@@ -55,17 +56,24 @@ export function GameControls({
             sessionId,
             gameId: parseInt(selectedGame),
             wager: parseInt(wager),
+            note: note.trim() || undefined,
         });
-        if (result.ok) router.refresh();
+        if (result.ok) {
+            setNote("");
+            router.refresh();
+        }
     }
 
     async function handleNewRound() {
         if (!activeGameSession) return;
         const result = await post(
             `/api/game-session/${activeGameSession.id}/new-round`,
-            {wager: parseInt(wager)}
+            {wager: parseInt(wager), note: note.trim() || undefined}
         );
-        if (result.ok) router.refresh();
+        if (result.ok) {
+            setNote("");
+            router.refresh();
+        }
     }
 
     async function handleEndRound() {
@@ -130,6 +138,18 @@ export function GameControls({
                         value={wager}
                         onChange={(e) => setWager(e.target.value)}
                         className="w-28"
+                        disabled={!!activeRound}
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <Label>Note (optional)</Label>
+                    <Input
+                        type="text"
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        placeholder="e.g., Payout reason"
+                        className="w-48"
                         disabled={!!activeRound}
                     />
                 </div>

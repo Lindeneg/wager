@@ -61,6 +61,7 @@ export default async function SessionPage({params}: Params) {
             wager: r.wager,
             active: r.active === 1,
             result: r.result,
+            note: r.note,
         })),
     }));
 

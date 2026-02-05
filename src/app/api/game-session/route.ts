@@ -9,6 +9,7 @@ const createGameSessionSchema = z.object({
     sessionId: z.number().int().positive(),
     gameId: z.number().int().positive(),
     wager: z.number().int().positive(),
+    note: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
             return parsed.ctx.toNextResponse();
         }
 
-        const {sessionId, gameId, wager} = parsed.data;
+        const {sessionId, gameId, wager, note} = parsed.data;
 
         // Check session exists and is active
         const session = await db.session.findUnique({
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest) {
                         wager,
                         active: 1,
                         result: stringifyResultMap(resultMap),
+                        note: note || null,
                     },
                 },
             },
@@ -89,6 +91,7 @@ export async function POST(request: NextRequest) {
                 wager: r.wager,
                 active: r.active === 1,
                 result: r.result,
+                note: r.note,
             })),
         });
     } catch (err) {

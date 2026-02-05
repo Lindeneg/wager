@@ -14,6 +14,7 @@ export interface Round {
     wager: number;
     active: boolean;
     result: string;
+    note: string | null;
 }
 
 export interface GameSessionData {

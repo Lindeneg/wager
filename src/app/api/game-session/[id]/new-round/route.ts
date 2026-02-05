@@ -11,6 +11,7 @@ interface Params {
 
 const newRoundSchema = z.object({
     wager: z.number().int().positive(),
+    note: z.string().optional(),
 });
 
 export async function POST(request: NextRequest, {params}: Params) {
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest, {params}: Params) {
             return parsed.ctx.toNextResponse();
         }
 
-        const {wager} = parsed.data;
+        const {wager, note} = parsed.data;
 
         const gameSession = await db.gameSession.findUnique({
             where: {id: gameSessionId},
@@ -68,6 +69,7 @@ export async function POST(request: NextRequest, {params}: Params) {
                 wager,
                 active: 1,
                 result: stringifyResultMap(resultMap),
+                note: note || null,
             },
         });
 
@@ -77,6 +79,7 @@ export async function POST(request: NextRequest, {params}: Params) {
             wager: round.wager,
             active: round.active === 1,
             result: round.result,
+            note: round.note,
         });
     } catch (err) {
         console.error("New round error:", err);
