@@ -1,6 +1,13 @@
 import {NextRequest, NextResponse} from "next/server";
+import z from "zod";
 import {db} from "@/lib/db";
 import HttpException from "@/lib/http-exception";
+import {parseRequestBody} from "@/lib/parse";
+import {createResultMap, stringifyResultMap} from "@/lib/result-map";
+
+const createSessionSchema = z.object({
+    userIds: z.array(z.number().int().positive()).min(2),
+});
 
 export async function GET(request: NextRequest) {
     try {
@@ -82,6 +89,67 @@ export async function GET(request: NextRequest) {
         });
     } catch (err) {
         console.error("Session list error:", err);
+        return HttpException.internal().toNextResponse();
+    }
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        const parsed = await parseRequestBody(request, createSessionSchema);
+        if (!parsed.ok) {
+            return parsed.ctx.toNextResponse();
+        }
+
+        const {userIds} = parsed.data;
+
+        // Check for existing active session
+        const activeSession = await db.session.findFirst({
+            where: {ended: null},
+        });
+
+        if (activeSession) {
+            return HttpException.unprocessable(
+                "An active session already exists"
+            ).toNextResponse();
+        }
+
+        // Verify all users exist
+        const users = await db.user.findMany({
+            where: {id: {in: userIds}},
+        });
+
+        if (users.length !== userIds.length) {
+            return HttpException.unprocessable(
+                "One or more users not found"
+            ).toNextResponse();
+        }
+
+        const resultMap = createResultMap(userIds);
+
+        const session = await db.session.create({
+            data: {
+                result: stringifyResultMap(resultMap),
+                started: new Date(),
+                participants: {
+                    create: userIds.map((userId) => ({userId})),
+                },
+            },
+            include: {
+                participants: {
+                    include: {user: {select: {id: true, name: true}}},
+                },
+            },
+        });
+
+        return NextResponse.json({
+            id: session.id,
+            result: session.result,
+            started: session.started,
+            ended: session.ended,
+            users: session.participants.map((p) => p.user),
+        });
+    } catch (err) {
+        console.error("Session create error:", err);
         return HttpException.internal().toNextResponse();
     }
 }
