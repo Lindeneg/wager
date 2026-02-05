@@ -3,7 +3,6 @@ TODO:
 - Table column spacing/alignment. It looks not good, especially the `game-history` table.
 - Everything clickable should have a mouse pointer.
 - Errors. We need to display errors nicely, we got some zod information back we can display.
-- Implement tests. Units and e2e. Look at postman stuff.
 
 NEW FEATURES:
 
