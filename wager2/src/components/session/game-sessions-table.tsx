@@ -16,12 +16,11 @@ const columns: Column<GameSessionData>[] = [
     {
         key: "gameName",
         header: "Game",
-        className: "w-16 font-mono",
     },
     {
         key: "rounds",
         header: "Rounds",
-        className: "capitalize",
+        className: "w-20 text-center",
         render(item) {
             return item.rounds.length;
         },
@@ -29,7 +28,6 @@ const columns: Column<GameSessionData>[] = [
     {
         key: "started",
         header: "Started",
-        className: "w-24 text-center",
         render(item) {
             return formatDateTime(item.started);
         },

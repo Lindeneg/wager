@@ -34,17 +34,16 @@ const columns: Column<Session>[] = [
     {
         key: "id",
         header: "ID",
-        className: "w-16 font-mono",
+        className: "w-16 text-center font-mono",
     },
     {
         key: "users",
         header: "Users",
-        className: "capitalize",
     },
     {
         key: "gameSessionCount",
         header: "Games",
-        className: "w-24 text-center",
+        className: "w-20 text-center",
     },
     {
         key: "started",
