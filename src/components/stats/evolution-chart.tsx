@@ -10,13 +10,11 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
-    TooltipProps,
-    TooltipContentProps,
 } from "recharts";
 import {useApi} from "@/hooks/use-api";
 import {Card, CardContent} from "@/components/ui/card";
 import {LoadingState, EmptyState} from "@/components/feedback";
-import {formatDateTime} from "@/lib/format";
+import {formatDate} from "@/lib/format";
 
 interface User {
     id: number;
@@ -70,7 +68,7 @@ export function EvolutionChart({users}: EvolutionChartProps) {
     const chartData = data.map((point, index) => {
         const row: Record<string, number | string> = {
             name: `Session ${index + 1}`,
-            timestamp: formatDateTime(point.timestamp),
+            timestamp: formatDate(point.timestamp),
         };
 
         for (const user of users) {
