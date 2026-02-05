@@ -777,5 +777,173 @@ describe("API", () => {
             expect(evolution[2].balances[state.billId]).toBe(41);
             expect(evolution[2].balances[state.johnId]).toBe(2);
         });
+
+        test("game rounds endpoint returns all rounds for Poker", async () => {
+            const res = await client.get(
+                `/api/stats/games/${state.pokerGameId}/rounds`
+            );
+
+            expect(res.status).toBe(200);
+            expect(res.data).toHaveProperty("gameId");
+            expect(res.data).toHaveProperty("gameName");
+            expect(res.data).toHaveProperty("rounds");
+            expect(res.data.gameName).toBe("Poker");
+
+            // Poker has 4 rounds: 3 from session 1, 1 from session 3
+            const rounds = res.data.rounds;
+            expect(rounds.length).toBe(4);
+
+            // Each round should have required fields
+            rounds.forEach((round: {
+                roundId: number;
+                round: number;
+                wager: number;
+                result: string;
+                sessionId: number;
+                gameSessionId: number;
+            }) => {
+                expect(round).toHaveProperty("roundId");
+                expect(round).toHaveProperty("round");
+                expect(round).toHaveProperty("wager");
+                expect(round).toHaveProperty("result");
+                expect(round).toHaveProperty("sessionId");
+                expect(round).toHaveProperty("gameSessionId");
+            });
+
+            // Verify wagers match what we set
+            const wagers = rounds.map((r: {wager: number}) => r.wager);
+            expect(wagers).toContain(10); // Round 1 session 1
+            expect(wagers).toContain(20); // Round 2 session 1
+            expect(wagers).toContain(15); // Round 3 session 1
+            expect(wagers).toContain(50); // Round 1 session 3
+        });
+
+        test("game rounds endpoint returns all rounds for Blackjack", async () => {
+            const res = await client.get(
+                `/api/stats/games/${state.blackjackGameId}/rounds`
+            );
+
+            expect(res.status).toBe(200);
+            expect(res.data.gameName).toBe("Blackjack");
+
+            // Blackjack has 3 rounds from session 2
+            const rounds = res.data.rounds;
+            expect(rounds.length).toBe(3);
+
+            const wagers = rounds.map((r: {wager: number}) => r.wager);
+            expect(wagers).toContain(25);
+            expect(wagers).toContain(30);
+            expect(wagers).toContain(10);
+        });
+
+        test("game rounds endpoint returns 404 for non-existent game", async () => {
+            const res = await client.get("/api/stats/games/99999/rounds");
+            expect(res.status).toBe(404);
+        });
+    });
+
+    // =========================================================================
+    // NOTE FUNCTIONALITY - Test notes on rounds
+    // Session 4: Test creating game sessions and rounds with notes
+    // =========================================================================
+    describe("Note Functionality", () => {
+        let session4Id: number;
+        let gameSession4Id: number;
+
+        test("can create session 4 for note testing", async () => {
+            const res = await client.post("/api/session", {
+                userIds: [state.milesId, state.billId],
+            });
+            expect(res.status).toBe(200);
+            session4Id = res.data.id;
+        });
+
+        test("can create game session with note", async () => {
+            const res = await client.post("/api/game-session", {
+                sessionId: session4Id,
+                gameId: state.pokerGameId,
+                wager: 100,
+                note: "Cash payout test",
+            });
+
+            expect(res.status).toBe(200);
+            expect(res.data.rounds.length).toBe(1);
+            expect(res.data.rounds[0].note).toBe("Cash payout test");
+            expect(res.data.rounds[0].wager).toBe(100);
+            gameSession4Id = res.data.id;
+        });
+
+        test("can end round (Miles wins)", async () => {
+            const res = await client.post(
+                `/api/game-session/${gameSession4Id}/end-round`,
+                {winnerId: state.milesId}
+            );
+            expect(res.status).toBe(200);
+        });
+
+        test("can create new round with note", async () => {
+            const res = await client.post(
+                `/api/game-session/${gameSession4Id}/new-round`,
+                {
+                    wager: 200,
+                    note: "Double or nothing",
+                }
+            );
+
+            expect(res.status).toBe(200);
+            expect(res.data.wager).toBe(200);
+            expect(res.data.note).toBe("Double or nothing");
+            expect(res.data.round).toBe(2);
+        });
+
+        test("can create new round without note", async () => {
+            // First end round 2
+            await client.post(
+                `/api/game-session/${gameSession4Id}/end-round`,
+                {winnerId: state.billId}
+            );
+
+            const res = await client.post(
+                `/api/game-session/${gameSession4Id}/new-round`,
+                {wager: 50}
+            );
+
+            expect(res.status).toBe(200);
+            expect(res.data.wager).toBe(50);
+            expect(res.data.note).toBeNull();
+        });
+
+        test("game rounds endpoint includes notes", async () => {
+            // End round 3 and game session
+            await client.post(
+                `/api/game-session/${gameSession4Id}/end-round`,
+                {winnerId: state.milesId}
+            );
+            await client.post(`/api/game-session/${gameSession4Id}/end`);
+            await client.post(`/api/session/${session4Id}/end`);
+
+            const res = await client.get(
+                `/api/stats/games/${state.pokerGameId}/rounds`
+            );
+
+            expect(res.status).toBe(200);
+
+            // Find rounds from session 4 (they have wagers 100, 200, 50)
+            const rounds = res.data.rounds;
+            const round100 = rounds.find(
+                (r: {wager: number}) => r.wager === 100
+            );
+            const round200 = rounds.find(
+                (r: {wager: number}) => r.wager === 200
+            );
+            const round50 = rounds.find(
+                (r: {wager: number; sessionId: number}) =>
+                    r.wager === 50 && r.sessionId === session4Id
+            );
+
+            expect(round100.note).toBe("Cash payout test");
+            expect(round200.note).toBe("Double or nothing");
+            expect(round50.note).toBeNull();
+        });
     });
 });
