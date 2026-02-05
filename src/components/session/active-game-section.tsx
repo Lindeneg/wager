@@ -5,6 +5,7 @@ import {Button} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import {SectionTitle} from "@/components/typography";
 import {ResultCard} from "./result-card";
+import {mergeResultMaps, parseResultMap} from "@/lib/result-map";
 import type {GameSessionData, Round, User} from "./types";
 
 interface ActiveGameSectionProps {
@@ -36,6 +37,23 @@ export function ActiveGameSection({
         : currentRound?.result || "{}";
     const resultData = JSON.parse(resultJson);
 
+    // Calculate running total for completed rounds up to current index
+    const runningTotalData = (() => {
+        if (isShowingTotal || !currentRound) return null;
+
+        // Get all completed (non-active) rounds up to and including current index
+        const roundsUpToCurrent = rounds
+            .slice(0, roundIndex + 1)
+            .filter((r) => !r.active);
+
+        // If only one round or viewing an active round, no running total needed
+        if (roundsUpToCurrent.length <= 1) return null;
+
+        const userIds = users.map((u) => u.id);
+        const resultMaps = roundsUpToCurrent.map((r) => parseResultMap(r.result));
+        return mergeResultMaps(userIds, ...resultMaps);
+    })();
+
     function handlePrev() {
         if (canGoPrev) {
             setRoundIndex((prev) =>
@@ -58,12 +76,19 @@ export function ActiveGameSection({
 
     const isActive = isShowingTotal ? !gameSession.ended : isActiveRound;
 
-    function RoundWager() {
+    function RoundInfo() {
         if (!isShowingTotal && currentRound) {
             return (
-                <p className="text-center text-sm text-zinc-500">
-                    Wager: {currentRound.wager}
-                </p>
+                <div className="space-y-1 text-center">
+                    <p className="text-sm text-zinc-500">
+                        Wager: {currentRound.wager}
+                    </p>
+                    {currentRound.note && (
+                        <p className="text-sm italic text-zinc-500">
+                            {currentRound.note}
+                        </p>
+                    )}
+                </div>
             );
         }
         if (isShowingTotal) {
@@ -116,7 +141,7 @@ export function ActiveGameSection({
                 </Button>
             </div>
 
-            <RoundWager />
+            <RoundInfo />
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {users.map((user) => (
@@ -129,6 +154,26 @@ export function ActiveGameSection({
                     />
                 ))}
             </div>
+
+            {/* Running Total (when viewing a specific completed round) */}
+            {runningTotalData && (
+                <div className="space-y-3 border-t pt-4">
+                    <h4 className="text-center text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                        Running Total (Rounds 1-{currentRound?.round})
+                    </h4>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {users.map((user) => (
+                            <ResultCard
+                                key={user.id}
+                                user={user}
+                                resultData={runningTotalData}
+                                users={users}
+                                compact
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
