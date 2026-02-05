@@ -656,27 +656,29 @@ describe("API", () => {
             const games = res.data.games;
 
             // Poker: 4 rounds total (3 in session 1, 1 in session 3)
-            // Wagers: 10 + 20 + 15 + 50 = 95
+            // Wagers: 10 + 20 + 15 + 50 = 95, avgWager = 24 (rounded)
             const poker = games.find(
                 (g: {gameName: string}) => g.gameName === "Poker"
             );
             expect(poker).toBeDefined();
             expect(poker.totalRounds).toBe(4);
             expect(poker.totalWagered).toBe(95);
-            expect(poker.topWinner).not.toBeNull();
-            expect(poker.topWinner.userName).toBe("Bill");
-            expect(poker.topWinner.netWinnings).toBe(58);
+            expect(poker.avgWager).toBe(24);
+            expect(poker.topWinners).toHaveLength(1);
+            expect(poker.topWinners[0].userName).toBe("Bill");
+            expect(poker.topWinners[0].netWinnings).toBe(58);
 
-            // Blackjack: 3 rounds, wagers: 25 + 30 + 10 = 65
+            // Blackjack: 3 rounds, wagers: 25 + 30 + 10 = 65, avgWager = 22 (rounded)
             const blackjack = games.find(
                 (g: {gameName: string}) => g.gameName === "Blackjack"
             );
             expect(blackjack).toBeDefined();
             expect(blackjack.totalRounds).toBe(3);
             expect(blackjack.totalWagered).toBe(65);
-            expect(blackjack.topWinner).not.toBeNull();
-            expect(blackjack.topWinner.userName).toBe("John");
-            expect(blackjack.topWinner.netWinnings).toBe(49);
+            expect(blackjack.avgWager).toBe(22);
+            expect(blackjack.topWinners).toHaveLength(1);
+            expect(blackjack.topWinners[0].userName).toBe("John");
+            expect(blackjack.topWinners[0].netWinnings).toBe(49);
         });
 
         test("head-to-head Miles vs Bill returns correct stats", async () => {

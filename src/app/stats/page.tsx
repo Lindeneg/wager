@@ -28,7 +28,7 @@ export default async function StatsPage() {
                         <SectionTitle className="mb-4">
                             Game Overview
                         </SectionTitle>
-                        <GameStatsTable />
+                        <GameStatsTable users={users} />
                     </section>
 
                     <section>

@@ -114,16 +114,19 @@ export async function computeBestGames(): Promise<UserBestGame[]> {
     return result;
 }
 
+export interface TopWinner {
+    userId: number;
+    userName: string;
+    netWinnings: number;
+}
+
 export interface GameStats {
     gameId: number;
     gameName: string;
     totalRounds: number;
     totalWagered: number;
-    topWinner: {
-        oderId: number;
-        userName: string;
-        netWinnings: number;
-    } | null;
+    avgWager: number;
+    topWinners: TopWinner[];
 }
 
 // Get overview stats for all games
@@ -181,27 +184,46 @@ export async function computeGameStats(): Promise<GameStats[]> {
 
     for (const game of games) {
         const gameStat = stats[game.id];
-        let topWinner: GameStats["topWinner"] = null;
 
-        for (const [userIdStr, net] of Object.entries(gameStat.userWinnings)) {
-            const oderId = parseInt(userIdStr);
-            if (net > 0 && (!topWinner || net > topWinner.netWinnings)) {
-                topWinner = {
-                    oderId,
-                    userName: userMap.get(oderId) || "Unknown",
-                    netWinnings: net,
-                };
-            }
+        // Find max net winnings
+        let maxNet = 0;
+        for (const net of Object.values(gameStat.userWinnings)) {
+            if (net > maxNet) maxNet = net;
         }
+
+        // Collect all users with max net winnings (handles ties)
+        const topWinners: TopWinner[] = [];
+        if (maxNet > 0) {
+            for (const [userIdStr, net] of Object.entries(gameStat.userWinnings)) {
+                if (net === maxNet) {
+                    const userId = parseInt(userIdStr);
+                    topWinners.push({
+                        userId,
+                        userName: userMap.get(userId) || "Unknown",
+                        netWinnings: net,
+                    });
+                }
+            }
+            // Sort alphabetically by name for consistent display
+            topWinners.sort((a, b) => a.userName.localeCompare(b.userName));
+        }
+
+        const avgWager = gameStat.totalRounds > 0
+            ? Math.round(gameStat.totalWagered / gameStat.totalRounds)
+            : 0;
 
         result.push({
             gameId: game.id,
             gameName: game.name,
             totalRounds: gameStat.totalRounds,
             totalWagered: gameStat.totalWagered,
-            topWinner,
+            avgWager,
+            topWinners,
         });
     }
+
+    // Sort by average wager descending
+    result.sort((a, b) => b.avgWager - a.avgWager);
 
     return result;
 }
