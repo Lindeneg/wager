@@ -1,6 +1,8 @@
 import {db} from "@/lib/db";
 import {Card, CardContent} from "@/components/ui/card";
 import {SectionTitle} from "@/components/typography";
+import {computeBestGames, type BestGame} from "@/lib/stats";
+import {statsCache} from "@/lib/cache";
 
 interface UserResult {
     id: number;
@@ -9,11 +11,19 @@ interface UserResult {
     owes: Record<string, number>;
     totalOwed: number;
     owed: Record<string, number>;
+    bestGame: BestGame | null;
 }
 
 async function getResults(): Promise<UserResult[]> {
     const result = await db.result.findFirst({where: {id: 1}});
     const users = await db.user.findMany({select: {id: true, name: true}});
+
+    // Get best games (cached)
+    const bestGames = await statsCache.getOrSet(
+        "stats:best-games",
+        computeBestGames
+    );
+    const bestGameMap = new Map(bestGames.map((bg) => [bg.oderId, bg.bestGame]));
 
     const userMap = new Map(users.map((u) => [u.id, u.name]));
     const resultData = result?.data ? JSON.parse(result.data) : {};
@@ -42,7 +52,15 @@ async function getResults(): Promise<UserResult[]> {
             }
         }
 
-        return {id: user.id, name: user.name, totalOwes, owes, totalOwed, owed};
+        return {
+            id: user.id,
+            name: user.name,
+            totalOwes,
+            owes,
+            totalOwed,
+            owed,
+            bestGame: bestGameMap.get(user.id) || null,
+        };
     });
 }
 
@@ -80,9 +98,17 @@ function UserResultCard({user}: {user: UserResult}) {
                           : "bg-zinc-50 dark:bg-zinc-800/50"
                 }`}>
                 <div className="flex items-center justify-between">
-                    <span className="font-medium capitalize text-zinc-900 dark:text-zinc-100">
-                        {user.name}
-                    </span>
+                    <div>
+                        <span className="font-medium capitalize text-zinc-900 dark:text-zinc-100">
+                            {user.name}
+                        </span>
+                        {user.bestGame && (
+                            <p className="text-xs text-zinc-500">
+                                Best: {user.bestGame.gameName} (+
+                                {user.bestGame.netWinnings})
+                            </p>
+                        )}
+                    </div>
                     <span
                         className={`text-2xl font-bold ${
                             isPositive

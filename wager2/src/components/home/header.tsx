@@ -1,6 +1,7 @@
 "use client";
 
 import {useState, useEffect} from "react";
+import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -161,6 +162,10 @@ export function Header({username}: HeaderProps) {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+
+                <Button variant="outline" asChild>
+                    <Link href="/stats">Stats</Link>
+                </Button>
             </div>
             <div className="flex items-center gap-4">
                 {username && (
