@@ -16,7 +16,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import {PageLayout} from "@/components/layout";
-import {ErrorAlert} from "@/components/feedback";
+import {ApiErrorDisplay} from "@/components/api-error";
 
 interface Field {
     name: string;
@@ -82,7 +82,7 @@ export function AuthForm({
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
-                        <ErrorAlert message={String(error)} />
+                        <ApiErrorDisplay error={error} />
                         {fields.map((field) => (
                             <div key={field.name} className="space-y-2">
                                 <Label htmlFor={field.name}>

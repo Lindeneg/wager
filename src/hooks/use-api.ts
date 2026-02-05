@@ -2,12 +2,27 @@
 
 import {useState, useCallback, useRef, useEffect} from "react";
 
-interface UseApiState {
-    loading: boolean;
-    error: string | null;
+// Validation error structure from Zod parsing
+export interface ValidationErrors {
+    [field: string]: {
+        errors: string[];
+    };
 }
 
-type ApiResult<T> = {ok: true; data: T} | {ok: false; error: string};
+// API error response structure
+// error can be: null, a string message, or a validation errors object
+export interface ApiError {
+    msg: string;
+    error: ValidationErrors | string | null;
+    status: number;
+}
+
+interface UseApiState {
+    loading: boolean;
+    error: ApiError | null;
+}
+
+type ApiResult<T> = {ok: true; data: T} | {ok: false; error: ApiError};
 
 interface UseApiResult extends UseApiState {
     get: <T = unknown>(endpoint: string) => Promise<ApiResult<T>>;
@@ -88,11 +103,13 @@ export function useApi(): UseApiResult {
                 const json = text ? JSON.parse(text) : null;
 
                 if (!response.ok) {
-                    // TODO better error state
-                    const errorMessage =
-                        json?.error || `Request failed (${response.status})`;
-                    setState({loading: false, error: errorMessage});
-                    return {ok: false, error: errorMessage};
+                    const apiError: ApiError = {
+                        msg: json?.msg || `Request failed (${response.status})`,
+                        error: json?.error || null,
+                        status: response.status,
+                    };
+                    setState({loading: false, error: apiError});
+                    return {ok: false, error: apiError};
                 }
 
                 setState({loading: false, error: null});
@@ -100,13 +117,19 @@ export function useApi(): UseApiResult {
             } catch (err) {
                 // Don't update state if aborted
                 if (err instanceof Error && err.name === "AbortError") {
-                    return {ok: false, error: "Request aborted"};
+                    return {
+                        ok: false,
+                        error: {msg: "Request aborted", error: null, status: 0},
+                    };
                 }
 
-                const errorMessage =
-                    err instanceof Error ? err.message : "An error occurred";
-                setState({loading: false, error: errorMessage});
-                return {ok: false, error: errorMessage};
+                const apiError: ApiError = {
+                    msg: err instanceof Error ? err.message : "An error occurred",
+                    error: null,
+                    status: 0,
+                };
+                setState({loading: false, error: apiError});
+                return {ok: false, error: apiError};
             }
         },
         []

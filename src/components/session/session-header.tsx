@@ -4,6 +4,7 @@ import {useRouter} from "next/navigation";
 import {Button} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import {useApi} from "@/hooks/use-api";
+import {ApiErrorDisplay} from "@/components/api-error";
 import type {SessionState} from "./types";
 
 interface SessionHeaderProps {
@@ -18,7 +19,7 @@ export function SessionHeader({
     hasGameSessions,
 }: SessionHeaderProps) {
     const router = useRouter();
-    const {post, del, loading} = useApi();
+    const {post, del, loading, error} = useApi();
 
     const canEndSession = state === "GAME_INACTIVE";
     const canCancelSession = state === "GAME_INACTIVE" && !hasGameSessions;
@@ -39,8 +40,9 @@ export function SessionHeader({
     }
 
     return (
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
+        <header className="space-y-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
                     Session #{sessionId}
                 </h1>
@@ -70,6 +72,8 @@ export function SessionHeader({
                     Go Back
                 </Button>
             </div>
+            </div>
+            <ApiErrorDisplay error={error} />
         </header>
     );
 }

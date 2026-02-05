@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import {useApi} from "@/hooks/use-api";
 import {UserToggleSelect} from "@/components/user-toggle-select";
+import {ApiErrorDisplay} from "@/components/api-error";
 
 interface User {
     id: number;
@@ -28,7 +29,7 @@ interface HeaderProps {
 
 export function Header({username}: HeaderProps) {
     const router = useRouter();
-    const {get, post, loading} = useApi();
+    const {get, post, loading, error, reset} = useApi();
 
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
@@ -39,13 +40,20 @@ export function Header({username}: HeaderProps) {
 
     useEffect(() => {
         if (sessionDialogOpen) {
+            reset(); // Clear any previous errors
             get<{users: User[]}>("/api/user").then((res) => {
                 if (res.ok && res.data) {
                     setUsers(res.data.users);
                 }
             });
         }
-    }, [sessionDialogOpen, get]);
+    }, [sessionDialogOpen, get, reset]);
+
+    useEffect(() => {
+        if (gameDialogOpen) {
+            reset(); // Clear any previous errors
+        }
+    }, [gameDialogOpen, reset]);
 
     async function handleSignOut() {
         await get("/api/signout");
@@ -102,6 +110,7 @@ export function Header({username}: HeaderProps) {
                             <DialogTitle>Begin New Session</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4 py-4">
+                            <ApiErrorDisplay error={error} />
                             <Label>Select Participants (min 2)</Label>
                             <UserToggleSelect
                                 users={users}
@@ -129,6 +138,7 @@ export function Header({username}: HeaderProps) {
                             <DialogTitle>Add New Game</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4 py-4">
+                            <ApiErrorDisplay error={error} />
                             <div className="space-y-2">
                                 <Label htmlFor="gameName">Game Name</Label>
                                 <Input

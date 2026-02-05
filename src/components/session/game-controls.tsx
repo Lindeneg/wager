@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import {useApi} from "@/hooks/use-api";
 import {UserToggleSelect} from "@/components/user-toggle-select";
+import {ApiErrorDisplay} from "@/components/api-error";
 import type {Game, User, SessionState, GameSessionData, Round} from "./types";
 
 interface GameControlsProps {
@@ -34,7 +35,7 @@ export function GameControls({
     activeRound,
 }: GameControlsProps) {
     const router = useRouter();
-    const {post, del, loading} = useApi();
+    const {post, del, loading, error} = useApi();
 
     const [selectedGame, setSelectedGame] = useState(
         activeGameSession?.gameId.toString() || games[0]?.id.toString() || ""
@@ -97,6 +98,8 @@ export function GameControls({
 
     return (
         <div className="space-y-6 rounded-lg border bg-white p-6 dark:bg-zinc-900">
+            <ApiErrorDisplay error={error} />
+
             {/* Game Config */}
             <div className="flex flex-wrap gap-4">
                 <div className="space-y-2">

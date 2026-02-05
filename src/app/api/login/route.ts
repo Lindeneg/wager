@@ -11,13 +11,15 @@ export async function POST(request: NextRequest) {
         const body = await parseRequestBody(request, authLoginSchema);
 
         if (!body.ok) {
-            return body.ctx.toNextResponse();
+            return HttpException.notFound().toNextResponse();
         }
 
         const {username, password} = body.data;
 
         // Case-insensitive username lookup
-        const users = await db.$queryRaw<{id: number; name: string; password: string}[]>`
+        const users = await db.$queryRaw<
+            {id: number; name: string; password: string}[]
+        >`
             SELECT id, name, password FROM user WHERE LOWER(name) = LOWER(${username}) LIMIT 1
         `;
         const user = users[0];
