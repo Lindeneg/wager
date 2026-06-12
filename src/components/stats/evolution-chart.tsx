@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 import {
     LineChart,
     Line,
@@ -9,6 +10,7 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
+    ReferenceLine,
     ResponsiveContainer,
 } from "recharts";
 import {useApi} from "@/hooks/use-api";
@@ -22,6 +24,7 @@ interface User {
 }
 
 interface EvolutionDataPoint {
+    sessionId: number;
     timestamp: string;
     balances: Record<number, number>;
 }
@@ -43,6 +46,7 @@ const COLORS = [
 ];
 
 export function EvolutionChart({users}: EvolutionChartProps) {
+    const router = useRouter();
     const {get, loading} = useApi();
     const [data, setData] = useState<EvolutionDataPoint[]>([]);
 
@@ -69,6 +73,7 @@ export function EvolutionChart({users}: EvolutionChartProps) {
         const row: Record<string, number | string> = {
             name: `Session ${index + 1}`,
             timestamp: formatDate(point.timestamp),
+            sessionId: point.sessionId,
         };
 
         for (const user of users) {
@@ -82,7 +87,16 @@ export function EvolutionChart({users}: EvolutionChartProps) {
         <Card>
             <CardContent className="p-6">
                 <ResponsiveContainer width="100%" height={400}>
-                    <LineChart data={chartData}>
+                    <LineChart
+                        data={chartData}
+                        style={{cursor: "pointer"}}
+                        onClick={(state) => {
+                            const index = Number(state.activeTooltipIndex);
+                            const sessionId = data[index]?.sessionId;
+                            if (sessionId) {
+                                router.push(`/session/${sessionId}`);
+                            }
+                        }}>
                         <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                         <XAxis
                             dataKey="name"
@@ -123,6 +137,12 @@ export function EvolutionChart({users}: EvolutionChartProps) {
                             }}
                         />
                         <Legend />
+                        <ReferenceLine
+                            y={0}
+                            stroke="#71717a"
+                            strokeDasharray="6 4"
+                            strokeWidth={1.5}
+                        />
                         {users.map((user, index) => (
                             <Line
                                 key={user.id}

@@ -15,7 +15,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {useApi} from "@/hooks/use-api";
-import {UserToggleSelect} from "@/components/user-toggle-select";
+import {ToggleSelect} from "@/components/toggle-select";
 import {ApiErrorDisplay} from "@/components/api-error";
 
 interface User {
@@ -112,8 +112,8 @@ export function Header({username}: HeaderProps) {
                         <div className="space-y-4 py-4">
                             <ApiErrorDisplay error={error} />
                             <Label>Select Participants (min 2)</Label>
-                            <UserToggleSelect
-                                users={users}
+                            <ToggleSelect
+                                items={users}
                                 selectedIds={selectedUserIds}
                                 onToggle={toggleUser}
                                 emptyMessage="Loading users..."

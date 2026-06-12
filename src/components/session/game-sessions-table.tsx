@@ -2,7 +2,7 @@
 
 import {Badge} from "@/components/ui/badge";
 import {SectionTitle} from "@/components/typography";
-import {formatDateTime} from "@/lib/format";
+import {formatDateTime, formatDuration} from "@/lib/format";
 import {DataTable, type Column} from "@/components/data";
 import type {GameSessionData} from "./types";
 
@@ -38,6 +38,15 @@ const columns: Column<GameSessionData>[] = [
         render(item) {
             if (item.ended) return formatDateTime(item.ended);
             return <Badge className="bg-green-600">Active</Badge>;
+        },
+    },
+    {
+        key: "duration",
+        header: "Duration",
+        className: "w-28",
+        render(item) {
+            if (item.ended) return formatDuration(item.started, item.ended);
+            return <span className="text-zinc-400">-</span>;
         },
     },
 ];

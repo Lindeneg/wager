@@ -6,7 +6,7 @@ import {useApi} from "@/hooks/use-api";
 import {Badge} from "@/components/ui/badge";
 import {SectionTitle} from "@/components/typography";
 import {DataTable, PageSizeSelect, Pagination, type Column} from "@/components/data";
-import {formatDate} from "@/lib/format";
+import {formatDate, formatDuration} from "@/lib/format";
 
 interface Session {
     id: number;
@@ -60,6 +60,17 @@ const columns: Column<Session>[] = [
                 </Badge>
             ) : (
                 formatDate(session.ended!)
+            ),
+    },
+    {
+        key: "duration",
+        header: "Duration",
+        className: "w-28",
+        render: (session) =>
+            session.isActive ? (
+                <span className="text-zinc-400">-</span>
+            ) : (
+                formatDuration(session.started, session.ended!)
             ),
     },
 ];

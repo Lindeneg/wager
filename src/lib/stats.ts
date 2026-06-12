@@ -311,6 +311,7 @@ export async function computeHeadToHead(
 }
 
 export interface EvolutionDataPoint {
+    sessionId: number;
     timestamp: string;
     balances: Record<number, number>; // oderId -> cumulative balance
 }
@@ -343,6 +344,7 @@ export async function computeEvolution(): Promise<EvolutionDataPoint[]> {
         }
 
         dataPoints.push({
+            sessionId: session.id,
             timestamp: session.ended!.toISOString(),
             balances: {...cumulativeBalances},
         });

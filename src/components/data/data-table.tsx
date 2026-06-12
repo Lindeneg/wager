@@ -15,8 +15,11 @@ export interface Column<T> {
     key: string;
     header: string;
     className?: string;
+    sortable?: boolean;
     render?: (item: T) => React.ReactNode;
 }
+
+export type SortDirection = "asc" | "desc";
 
 interface DataTableProps<T> {
     columns: Column<T>[];
@@ -26,6 +29,10 @@ interface DataTableProps<T> {
     onRowClick?: (item: T) => void;
     rowClassName?: (item: T) => string;
     getRowKey: (item: T) => string | number;
+    /** Active sort column; sorting itself is the consumer's job */
+    sortKey?: string | null;
+    sortDir?: SortDirection;
+    onSortChange?: (key: string) => void;
 }
 
 export function DataTable<T>({
@@ -36,6 +43,9 @@ export function DataTable<T>({
     onRowClick,
     rowClassName,
     getRowKey,
+    sortKey,
+    sortDir,
+    onSortChange,
 }: DataTableProps<T>) {
     if (loading && data.length === 0) {
         return <LoadingState />;
@@ -48,7 +58,23 @@ export function DataTable<T>({
                     <TableRow>
                         {columns.map((col) => (
                             <TableHead key={col.key} className={col.className}>
-                                {col.header}
+                                {col.sortable && onSortChange ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => onSortChange(col.key)}
+                                        className="inline-flex cursor-pointer items-center gap-1 hover:text-zinc-900 dark:hover:text-zinc-100">
+                                        {col.header}
+                                        <span className="text-xs">
+                                            {sortKey === col.key
+                                                ? sortDir === "asc"
+                                                    ? "▲"
+                                                    : "▼"
+                                                : "↕"}
+                                        </span>
+                                    </button>
+                                ) : (
+                                    col.header
+                                )}
                             </TableHead>
                         ))}
                     </TableRow>

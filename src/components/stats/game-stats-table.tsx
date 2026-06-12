@@ -1,8 +1,13 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
+import {useRouter} from "next/navigation";
 import {useApi} from "@/hooks/use-api";
-import {DataTable, type Column} from "@/components/data";
+import {
+    DataTable,
+    type Column,
+    type SortDirection,
+} from "@/components/data";
 import {LoadingState} from "@/components/feedback";
 import {GameRoundsViewer} from "./game-rounds-viewer";
 
@@ -28,31 +33,46 @@ interface User {
 
 interface GameStatsTableProps {
     users: User[];
+    selectedGameId: number | null;
 }
+
+// Sort value per column; Top Winner sorts by the winner's net winnings
+const sortValues: Record<string, (g: GameStats) => string | number> = {
+    gameName: (g) => g.gameName,
+    totalRounds: (g) => g.totalRounds,
+    avgWager: (g) => g.avgWager,
+    totalWagered: (g) => g.totalWagered,
+    topWinners: (g) => g.topWinners[0]?.netWinnings ?? -Infinity,
+};
 
 const columns: Column<GameStats>[] = [
     {
         key: "gameName",
         header: "Game",
+        sortable: true,
     },
     {
         key: "totalRounds",
         header: "Rounds",
         className: "w-24 text-center",
+        sortable: true,
     },
     {
         key: "avgWager",
         header: "Avg Wager",
         className: "w-28 text-center",
+        sortable: true,
     },
     {
         key: "totalWagered",
         header: "Total Wagered",
         className: "w-32 text-center",
+        sortable: true,
     },
     {
         key: "topWinners",
         header: "Top Winner",
+        sortable: true,
         render(item) {
             if (item.topWinners.length === 0) {
                 return <span className="text-zinc-400">-</span>;
@@ -71,10 +91,14 @@ const columns: Column<GameStats>[] = [
     },
 ];
 
-export function GameStatsTable({users}: GameStatsTableProps) {
+export function GameStatsTable({users, selectedGameId}: GameStatsTableProps) {
+    const router = useRouter();
     const {get, loading} = useApi();
     const [games, setGames] = useState<GameStats[]>([]);
-    const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
+    const [sort, setSort] = useState<{
+        key: string;
+        dir: SortDirection;
+    } | null>(null);
 
     useEffect(() => {
         get<{games: GameStats[]}>("/api/stats/games").then((res) => {
@@ -84,27 +108,48 @@ export function GameStatsTable({users}: GameStatsTableProps) {
         });
     }, [get]);
 
+    const sortedGames = useMemo(() => {
+        if (!sort) return games;
+        const value = sortValues[sort.key];
+        const factor = sort.dir === "asc" ? 1 : -1;
+        return [...games].sort((a, b) => {
+            const va = value(a);
+            const vb = value(b);
+            if (typeof va === "string" && typeof vb === "string") {
+                return va.localeCompare(vb) * factor;
+            }
+            return ((va as number) - (vb as number)) * factor;
+        });
+    }, [games, sort]);
+
+    function handleSortChange(key: string) {
+        setSort((prev) => {
+            if (prev?.key === key) {
+                return {key, dir: prev.dir === "asc" ? "desc" : "asc"};
+            }
+            // text sorts A-Z first, numbers biggest first
+            return {key, dir: key === "gameName" ? "asc" : "desc"};
+        });
+    }
+
     if (loading && games.length === 0) {
         return <LoadingState />;
     }
 
     if (selectedGameId !== null) {
-        return (
-            <GameRoundsViewer
-                gameId={selectedGameId}
-                users={users}
-                onClose={() => setSelectedGameId(null)}
-            />
-        );
+        return <GameRoundsViewer gameId={selectedGameId} users={users} />;
     }
 
     return (
         <DataTable
             columns={columns}
-            data={games}
+            data={sortedGames}
             emptyMessage="No game data yet"
             getRowKey={(g) => g.gameId}
-            onRowClick={(g) => setSelectedGameId(g.gameId)}
+            onRowClick={(g) => router.push(`/stats?game=${g.gameId}`)}
+            sortKey={sort?.key ?? null}
+            sortDir={sort?.dir}
+            onSortChange={handleSortChange}
         />
     );
 }

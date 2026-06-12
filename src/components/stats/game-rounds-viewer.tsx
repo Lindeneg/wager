@@ -36,10 +36,9 @@ interface GameRoundsResponse {
 interface GameRoundsViewerProps {
     gameId: number;
     users: User[];
-    onClose: () => void;
 }
 
-export function GameRoundsViewer({gameId, users, onClose}: GameRoundsViewerProps) {
+export function GameRoundsViewer({gameId, users}: GameRoundsViewerProps) {
     const {get, loading} = useApi();
     const [data, setData] = useState<GameRoundsResponse | null>(null);
 
@@ -66,8 +65,8 @@ export function GameRoundsViewer({gameId, users, onClose}: GameRoundsViewerProps
             <div className="space-y-4 rounded-lg border bg-white p-6 dark:bg-zinc-900">
                 <div className="flex items-center justify-between">
                     <SectionTitle>{gameName}</SectionTitle>
-                    <Button variant="outline" size="sm" onClick={onClose}>
-                        Close
+                    <Button variant="outline" size="sm" asChild>
+                        <Link href="/stats">Close</Link>
                     </Button>
                 </div>
                 <p className="text-center text-zinc-500">No completed rounds</p>
@@ -100,8 +99,8 @@ export function GameRoundsViewer({gameId, users, onClose}: GameRoundsViewerProps
                     <SectionTitle>{gameName}</SectionTitle>
                     <Badge variant="outline">{rounds.length} rounds</Badge>
                 </div>
-                <Button variant="outline" size="sm" onClick={onClose}>
-                    Close
+                <Button variant="outline" size="sm" asChild>
+                    <Link href="/stats">Close</Link>
                 </Button>
             </div>
 

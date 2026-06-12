@@ -1,5 +1,6 @@
 import {notFound} from "next/navigation";
 import {db} from "@/lib/db";
+import {parseMixedGames} from "@/lib/mixed-game";
 import {PageLayout, PageContainer} from "@/components/layout";
 import {SessionView} from "@/components/session";
 
@@ -18,6 +19,7 @@ async function getSessionData(id: number) {
                 include: {
                     game: true,
                     rounds: {orderBy: {round: "asc"}},
+                    mixedGame: true,
                 },
                 orderBy: {started: "desc"},
             },
@@ -55,6 +57,7 @@ export default async function SessionPage({params}: Params) {
         result: gs.result,
         started: gs.started,
         ended: gs.ended,
+        mixed: gs.mixedGame ? parseMixedGames(gs.mixedGame.games) : null,
         rounds: gs.rounds.map((r) => ({
             id: r.id,
             round: r.round,

@@ -61,11 +61,22 @@ model GameSession {
   started   DateTime
   ended     DateTime?
 
-  session Session            @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  game    Game               @relation(fields: [gameId], references: [id])
-  rounds  GameSessionRound[]
+  session   Session            @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  game      Game               @relation(fields: [gameId], references: [id])
+  rounds    GameSessionRound[]
+  mixedGame MixedGame?
 
   @@map("game_session")
+}
+
+model MixedGame {
+  id            Int    @id @default(autoincrement())
+  gameSessionId Int    @unique @map("game_session_id")
+  games         String
+
+  gameSession GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+
+  @@map("mixed_game")
 }
 
 model GameSessionRound {

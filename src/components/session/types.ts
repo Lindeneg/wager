@@ -1,3 +1,5 @@
+import type {MixedGameEntry} from "@/lib/mixed-game";
+
 export interface User {
     id: number;
     name: string;
@@ -25,6 +27,7 @@ export interface GameSessionData {
     started: Date;
     ended: Date | null;
     rounds: Round[];
+    mixed: MixedGameEntry[] | null;
 }
 
 export interface SessionData {
